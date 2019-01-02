@@ -24,7 +24,7 @@ hs_err_pid*
 
 *.properties
 
-.metadata
+.meta*
 bin/
 tmp/
 *.tmp
