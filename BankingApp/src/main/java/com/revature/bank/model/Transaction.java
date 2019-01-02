@@ -1,6 +1,7 @@
 package com.revature.bank.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Transaction implements Serializable {
 
@@ -14,20 +15,23 @@ public class Transaction implements Serializable {
 	private int accountID2;
 	private String transType;
 	private double amount;
+	private Date transTime;
 	
 	public Transaction() {
 		super();
 	}
 
-	public Transaction(int transactionID, int accountID1, int accountID2, String transType, double amount) {
+	public Transaction(int transactionID, int accountID1, int accountID2, String transType, double amount,
+			Date transTime) {
 		super();
 		this.transactionID = transactionID;
 		this.accountID1 = accountID1;
 		this.accountID2 = accountID2;
 		this.transType = transType;
 		this.amount = amount;
+		this.transTime = transTime;
 	}
-	
+
 	public int getTransactionID() {
 		return transactionID;
 	}
@@ -68,6 +72,14 @@ public class Transaction implements Serializable {
 		this.amount = amount;
 	}
 
+	public Date getTransTime() {
+		return transTime;
+	}
+
+	public void setTransTime(Date transTime) {
+		this.transTime = transTime;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -77,6 +89,7 @@ public class Transaction implements Serializable {
 		long temp;
 		temp = Double.doubleToLongBits(amount);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((transTime == null) ? 0 : transTime.hashCode());
 		result = prime * result + ((transType == null) ? 0 : transType.hashCode());
 		result = prime * result + transactionID;
 		return result;
@@ -97,6 +110,11 @@ public class Transaction implements Serializable {
 			return false;
 		if (Double.doubleToLongBits(amount) != Double.doubleToLongBits(other.amount))
 			return false;
+		if (transTime == null) {
+			if (other.transTime != null)
+				return false;
+		} else if (!transTime.equals(other.transTime))
+			return false;
 		if (transType == null) {
 			if (other.transType != null)
 				return false;
@@ -110,9 +128,7 @@ public class Transaction implements Serializable {
 	@Override
 	public String toString() {
 		return "Transaction [transactionID=" + transactionID + ", accountID1=" + accountID1 + ", accountID2="
-				+ accountID2 + ", transType=" + transType + ", amount=" + amount + "]";
+				+ accountID2 + ", transType=" + transType + ", amount=" + amount + ", transTime=" + transTime + "]";
 	}
-
-	
 
 }
