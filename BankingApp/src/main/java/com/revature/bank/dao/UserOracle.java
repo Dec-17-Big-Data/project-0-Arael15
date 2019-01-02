@@ -1,5 +1,6 @@
 package com.revature.bank.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,7 +40,7 @@ public class UserOracle implements UserDao {
 		}
 		
 		try {
-			String sql = "select * from user where user_id = ?";
+			String sql = "select * from users where user_id = ?";
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
@@ -47,8 +48,8 @@ public class UserOracle implements UserDao {
 			User user = null;
 
 			while(rs.next()) {
-			user = new User(rs.getString("username"), rs.getString("first_name"), rs.getString("last_name"),
-					rs.getString("user_password"), rs.getInt("user_id"));
+			user = new User(rs.getString("username"), rs.getString("user_password"), rs.getString("first_name"),
+					rs.getString("last_name"), rs.getInt("user_id"));
 			}
 			
 			if (user == null) {
@@ -77,7 +78,7 @@ public class UserOracle implements UserDao {
 		}
 		
 		try {
-			String sql = "select * from user where username = ?";
+			String sql = "select * from users where username = ?";
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setString(1, name);
 			ResultSet rs = ps.executeQuery();
@@ -85,8 +86,8 @@ public class UserOracle implements UserDao {
 			User user = null;
 
 			while(rs.next()) {
-			user = new User(rs.getString("username"), rs.getString("first_name"), rs.getString("last_name"),
-					rs.getString("user_password"), rs.getInt("user_id"));
+				user = new User(rs.getString("username"), rs.getString("user_password"), rs.getString("first_name"),
+						rs.getString("last_name"), rs.getInt("user_id"));
 			}
 			
 			if (user == null) {
@@ -115,20 +116,86 @@ public class UserOracle implements UserDao {
 		}
 
 		try {
-			String sql = "select * from user";
+			String sql = "select * from users";
 			PreparedStatement ps = con.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 
 			List<User> users = new ArrayList<User>();
 			while (rs.next()) {
-				users.add(new User(rs.getString("username"), rs.getString("first_name"), rs.getString("last_name"),
-						rs.getString("user_password"), rs.getInt("user_id")));
+				users.add(new User(rs.getString("username"), rs.getString("user_password"), rs.getString("first_name"),
+						rs.getString("last_name"), rs.getInt("user_id")));
 			}
 			return log.traceExit(Optional.of(users));
 		} catch (SQLException e) {
 			log.catching(e);
-			log.error("SQLExcpetion occurred", e);
+			log.error("SQLException occurred", e);
 		}
+		
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+
+	public Optional<User> createUser(String firstName, String lastName, String userName, String password) {
+		log.traceEntry();
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "{call add_user(?, ?, ?, ?, ?)}";
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setString(1, firstName);
+			cs.setString(2, lastName);
+			cs.setString(3, userName);
+			cs.setString(4, password);
+			cs.registerOutParameter(5, java.sql.Types.INTEGER);
+			
+			ResultSet rs = cs.executeQuery();
+			
+			User user = null;
+			
+			while(rs.next()) {
+				user = new User(rs.getString("username"), rs.getString("password"), rs.getString("first_name"),
+						rs.getString("last_name"), rs.getInt("user_id"));
+			}
+			
+			return log.traceExit(Optional.of(user));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+		
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+
+	public Optional<Boolean> deleteUser(Integer id) {
+		log.traceEntry("id = {}", id);
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "{call remove_user(?)}";
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setInt(1, id);
+			
+			boolean result = cs.execute();
+			
+			return log.traceExit(Optional.of(result));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+		
 		log.traceExit(Optional.empty());
 		return Optional.empty();
 	}

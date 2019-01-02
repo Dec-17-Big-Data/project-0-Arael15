@@ -11,7 +11,7 @@ create table users (
 create table account (
     account_id number(10) primary key,
     user_id number(10) not null,
-    balance binary_float default 0
+    balance decimal(20,2) default 0
 );
 
 create table transaction (
@@ -19,7 +19,7 @@ create table transaction (
     transaction_type varchar2(255) not null,
     account1 number(10) not null,
     account2 number(10),
-    amount binary_float not null,
+    amount decimal(20,2) not null,
     transaction_time timestamp not null
 );
 
@@ -55,6 +55,7 @@ create or replace procedure
             values
             (f_name, l_name, u_name, p_word, user_seq.nextval);
         u_id := user_seq.currval;
+        commit;
     end;
 /
 
@@ -66,11 +67,12 @@ create or replace procedure
             values
             (account_seq.nextval, u_id);
         a_id := account_seq.currval;
+        commit;
     end;
 /
 
 create or replace procedure
-    make_deposit(a_id number, a binary_float, t_id out number) as
+    make_deposit(a_id number, a decimal, t_id out number) as
     begin
         insert into transaction
             (account1, account2, amount, transaction_type, transaction_id, transaction_time)
@@ -79,11 +81,12 @@ create or replace procedure
         update account
             set balance = (select balance from account where account_id = a_id) + a where account_id = a_id;
         t_id := transaction_seq.currval;
+        commit;
     end;
 /
     
 create or replace procedure
-    make_withdrawal(a_id number, a binary_float, t_id out number) as
+    make_withdrawal(a_id number, a decimal, t_id out number) as
     begin
         insert into transaction
             (account1, account2, amount, transaction_type, transaction_id, transaction_time)
@@ -92,11 +95,12 @@ create or replace procedure
         update account
             set balance = (select balance from account where account_id = a_id) - a where account_id = a_id;
         t_id := transaction_seq.currval;
+        commit;
     end;
 /
 
 create or replace procedure
-    issue_transfer(a_id1 number, a_id2 number, a binary_float, t_id out number) as
+    issue_transfer(a_id1 number, a_id2 number, a decimal, t_id out number) as
     begin
         insert into transaction
             (account1, account2, amount, transaction_type, transaction_id, transaction_time)
@@ -107,63 +111,23 @@ create or replace procedure
         update account
             set balance = (select balance from account where account_id = a_id2) + a where account_id = a_id2;
         t_id := transaction_seq.currval;
+        commit;
     end;
 /
 
--- Table Population
+create or replace procedure
+    remove_user(u_id number) as
+    begin
+        delete from users where user_id = u_id;
+        commit;
+    end;
+/
 
-exec add_user('Jotaro', 'Kujo', 'StarPlatinum', 'HesOnly17');
-add_user('Joseph', 'Joestar', 'HermitPurple', 'OhMyGod');
-add_user('Noriaki', 'Kakyoin', 'HierophantGreen', 'EmeraldSplash');
-add_user('Mohammed', 'Avdol', 'MagiciansRed', 'YesIAm');
-add_user('Jean-Pierre', 'Polnareff', 'SilverChariot', 'NowJustATurtle');
-add_user('Dio', 'Brando', 'ZaWarudo', 'RoadRollerDa');
-
-add_account(1);
-add_account(1);
-add_account(2);
-add_account(2);
-add_account(3);
-add_account(3);
-add_account(4);
-add_account(4);
-add_account(5);
-add_account(5);
-add_account(6);
-add_account(6);
-
-make_deposit(1, 500.00);
-make_deposit(2, 500.00);
-make_deposit(3, 500.00);
-make_deposit(4, 500.00);
-make_deposit(5, 500.00);
-make_deposit(6, 500.00);
-make_deposit(7, 500.00);
-make_deposit(8, 500.00);
-make_deposit(9, 500.00);
-make_deposit(10, 500.00);
-make_deposit(11, 500.00);
-make_deposit(12, 500.00);
-
-make_withdrawal(3, 200.00);
-make_withdrawal(3, 200.00);
-make_withdrawal(5, 100.00);
-make_withdrawal(6, 100.00);
-make_withdrawal(7, 10.00);
-make_withdrawal(7, 10.00);
-make_withdrawal(9, 400.00);
-make_withdrawal(10, 300.19);
-
-issue_transfer(1, 2, 500.00);
-issue_transfer(2, 1, 1000.00);
-issue_transfer(4, 3, 200.00);
-issue_transfer(4, 3, 100.00);
-issue_transfer(7, 8, 111.11);
-issue_transfer(11, 12, 123.00);
-issue_transfer(11, 12, 45.67);
-issue_transfer(11, 12, 89.10);
-
-
-
-
+create or replace procedure
+    remove_account(a_id number) as
+    begin
+        delete from account where account_id = a_id;
+        commit;
+    end;
+/
 

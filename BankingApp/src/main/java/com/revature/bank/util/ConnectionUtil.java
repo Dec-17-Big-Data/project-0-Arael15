@@ -26,6 +26,7 @@ public class ConnectionUtil {
 		
 		InputStream in = null;
 		
+		log.debug("Attempting to connect to database");
 		try {
 			// Load in properties file
 			Properties props = new Properties();
@@ -41,7 +42,9 @@ public class ConnectionUtil {
 			String password = props.getProperty("jdbc.password");
 			
 			con = DriverManager.getConnection(endpoint, username, password);
-			return con;
+			
+			log.debug("Database connection established");
+			return log.traceExit(con);
 		}
 		catch(Exception e) {
 			log.error("Unable to establish connection to database");

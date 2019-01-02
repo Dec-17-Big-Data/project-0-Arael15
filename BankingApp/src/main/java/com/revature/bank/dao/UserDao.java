@@ -9,4 +9,6 @@ public interface UserDao {
 	Optional<User> getUserByID(Integer id);
 	Optional<User> getUserByName(String name);
 	Optional<List<User>> getAllUsers();
+	Optional<User> createUser(String firstName, String lastName, String userName, String password);
+	Optional<Boolean> deleteUser(Integer id);
 }

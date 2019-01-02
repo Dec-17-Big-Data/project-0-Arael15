@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.revature.bank.model.Account;
-import com.revature.bank.model.User;
 import com.revature.bank.util.ConnectionUtil;
 
 public class AccountOracle implements AccountDao {
@@ -118,7 +117,7 @@ public class AccountOracle implements AccountDao {
 			return log.traceExit(Optional.of(accounts));
 		} catch (SQLException e) {
 			log.catching(e);
-			log.error("SQLExcpetion occurred", e);
+			log.error("SQLException occurred", e);
 		}
 		
 		log.traceExit(Optional.empty());
