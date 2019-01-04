@@ -145,7 +145,7 @@ public class UserOracle implements UserDao {
 		}
 		
 		try {
-			String sql = "{call add_user(?, ?, ?, ?, ?)}";
+			String sql = "call add_user(?, ?, ?, ?, ?)";
 			CallableStatement cs = con.prepareCall(sql);
 			cs.setString(1, firstName);
 			cs.setString(2, lastName);
@@ -153,14 +153,9 @@ public class UserOracle implements UserDao {
 			cs.setString(4, password);
 			cs.registerOutParameter(5, java.sql.Types.INTEGER);
 			
-			ResultSet rs = cs.executeQuery();
+			cs.executeUpdate();
 			
-			User user = null;
-			
-			while(rs.next()) {
-				user = new User(rs.getString("username"), rs.getString("password"), rs.getString("first_name"),
-						rs.getString("last_name"), rs.getInt("user_id"));
-			}
+			User user = new User(userName, password, firstName, lastName, cs.getInt(5));
 			
 			return log.traceExit(Optional.of(user));
 		}
@@ -183,7 +178,7 @@ public class UserOracle implements UserDao {
 		}
 		
 		try {
-			String sql = "{call remove_user(?)}";
+			String sql = "call remove_user(?)";
 			CallableStatement cs = con.prepareCall(sql);
 			cs.setInt(1, id);
 			

@@ -1,7 +1,6 @@
 package com.revature.bank.test;
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,6 +22,13 @@ import com.revature.bank.model.Account;
 import com.revature.bank.model.Transaction;
 import com.revature.bank.model.User;
 
+//	This file was made to verify that the Oracle implementations correctly executed
+//	the PL/SQL commands for the database. They should not generally be run except against
+//	known data in the database, and the inputs for functions ought to be adjusted accordingly.
+//	Additionally, since some of the tests require inserting/deleting rows into tables
+//	and others check against the size of tables, running these tests simultaneously is a
+//  known source of failing tests.
+
 public class OracleTest {
 	
 	private static UserDao userOracle;
@@ -30,7 +36,7 @@ public class OracleTest {
 	private static TransactionDao transactionOracle;
 	private static Logger log = LogManager.getLogger(OracleTest.class);
 
-	//Instantiate the oracles once
+	//	Instantiate the oracles once
 	@BeforeClass public static void initialize() {
 		log.info("NEW PROGRAM EXECUTION");
 		log.info("Beginning Oracle Tests");
@@ -43,7 +49,7 @@ public class OracleTest {
 		log.info("Oracle Tests Concluded" + System.lineSeparator());
 	}
 	
-	//Tests for UserOracle
+	//	Tests for UserOracle
 	
 	@Test
 	public void userIDLookupTest() {
@@ -85,7 +91,19 @@ public class OracleTest {
 		assertEquals(u5, users.get(4));
 	}
 	
-	//Tests for AccountOracle
+	@Test
+	public void addUserTest() {
+		Optional<User> user = userOracle.createUser("Johnny", "Joestar", "CantWalk", "HamonForever");
+		assertTrue(user.get().getUserID() > 6);
+	}
+	
+	@Test
+	public void removeUserTest() {
+		Optional<Boolean> result = userOracle.deleteUser(7);
+		assertFalse(result.get());
+	}
+	
+	//	Tests for AccountOracle
 	
 	@Test
 	public void accountLookupTest() {
@@ -131,6 +149,18 @@ public class OracleTest {
 		assertEquals(actual.size(), 8);
 	}
 	
+	@Test
+	public void removeAccountTest() {
+		Optional<Boolean> result = accountOracle.removeAccount(7);
+		assertFalse(result.get());
+	}
+	
+	@Test
+	public void addAccountTest() {
+		Optional<Integer> account = accountOracle.addAccount(4);
+		assertTrue(account.get() > 10);
+	}
+	
 	//Tests for TransactionOracle
 	
 	@Test
@@ -168,6 +198,24 @@ public class OracleTest {
 	public void getAllTransactionsTest() {
 		Optional<List<Transaction>> trans = transactionOracle.getAllTransactions();
 		assertEquals(trans.get().size(), 16);
+	}
+	
+	@Test
+	public void makeWithdrawalTest() {
+		Optional<Integer> trans = transactionOracle.makeWithdrawal(5, 5.00);
+		assertTrue(trans.get() > 10);
+	}
+	
+	@Test
+	public void makeDepositTest() {
+		Optional<Integer> trans = transactionOracle.makeDeposit(5, 5.00);
+		assertTrue(trans.get() > 10);
+	}
+	
+	@Test
+	public void issueTransferTest() {
+		Optional<Integer> trans = transactionOracle.issueTransfer(5, 6, 5.00);
+		assertTrue(trans.get() > 10);
 	}
 
 }

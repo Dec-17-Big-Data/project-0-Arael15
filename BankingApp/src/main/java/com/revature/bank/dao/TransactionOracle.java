@@ -1,5 +1,6 @@
 package com.revature.bank.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -128,6 +129,97 @@ public class TransactionOracle implements TransactionDao {
 			log.error("SQLException occurred", e);
 		}
 		
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+
+	public Optional<Integer> makeWithdrawal(Integer account, Double amount) {
+		log.traceEntry();
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "call make_withdrawal(?, ?, ?)";
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setInt(1, account);
+			cs.setDouble(2,  amount);
+			cs.registerOutParameter(3, java.sql.Types.INTEGER);
+			
+			cs.executeUpdate();
+			
+			Integer i = cs.getInt(3);
+			return log.traceExit(Optional.of(i));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+
+	public Optional<Integer> makeDeposit(Integer account, Double amount) {
+		log.traceEntry();
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "call make_deposit(?, ?, ?)";
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setInt(1, account);
+			cs.setDouble(2,  amount);
+			cs.registerOutParameter(3, java.sql.Types.INTEGER);
+			
+			cs.executeUpdate();
+			
+			Integer i = cs.getInt(3);
+			return log.traceExit(Optional.of(i));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+
+	public Optional<Integer> issueTransfer(Integer account1, Integer account2, Double amount) {
+		log.traceEntry();
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "call issue_transfer(?, ?, ?, ?)";
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setInt(1, account1);
+			cs.setInt(2, account2);
+			cs.setDouble(3,  amount);
+			cs.registerOutParameter(4, java.sql.Types.INTEGER);
+			
+			cs.executeUpdate();
+			
+			Integer i = cs.getInt(4);
+			return log.traceExit(Optional.of(i));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+
 		log.traceExit(Optional.empty());
 		return Optional.empty();
 	}

@@ -1,5 +1,6 @@
 package com.revature.bank.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -123,5 +124,63 @@ public class AccountOracle implements AccountDao {
 		log.traceExit(Optional.empty());
 		return Optional.empty();
 	}
+
+	public Optional<Boolean> removeAccount(Integer id) {
+		log.traceEntry("id = {}", id);
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "call remove_account(?)";
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setInt(1, id);
+			
+			boolean result = cs.execute();
+			
+			return log.traceExit(Optional.of(result));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+		
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+
+	public Optional<Integer> addAccount(Integer id) {
+		log.traceEntry();
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "call add_account(?, ?)";
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setInt(1, id);
+			cs.registerOutParameter(2, java.sql.Types.INTEGER);
+			
+			cs.executeUpdate();
+			
+			Integer i = cs.getInt(2);
+			return log.traceExit(Optional.of(i));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+	
+	
 
 }
