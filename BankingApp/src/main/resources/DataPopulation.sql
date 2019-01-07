@@ -50,7 +50,3 @@ exec issue_transfer(7, 8, 111.11, :id);
 exec issue_transfer(11, 12, 123.00, :id);
 exec issue_transfer(11, 12, 45.67, :id);
 exec issue_transfer(11, 12, 89.10, :id);
-
-exec remove_account(4);
-exec remove_user(1);
-exec remove_account(3);

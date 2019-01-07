@@ -1,9 +1,13 @@
 package com.revature.bank.util;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,9 +16,8 @@ import com.revature.bank.exceptions.AccountNotEmptyException;
 import com.revature.bank.exceptions.AccountNotOwnedException;
 import com.revature.bank.exceptions.InsufficientBalanceException;
 import com.revature.bank.exceptions.InvalidUsernameException;
-import com.revature.bank.exceptions.PasswordMismatchException;
-import com.revature.bank.exceptions.UserNotFoundException;
 import com.revature.bank.model.Account;
+import com.revature.bank.model.Transaction;
 import com.revature.bank.model.User;
 import com.revature.bank.services.AccountService;
 import com.revature.bank.services.TransactionService;
@@ -50,7 +53,7 @@ public class Interactor {
 				System.out.println("2. Register a new user");
 				System.out.print("\nSelection: ");
 				String choice = s.nextLine();
-				System.out.println("\nRedirecting...\n");
+				System.out.println("\nRedirecting...");
 				choice = choice.toLowerCase().trim();
 				switch (choice) {
 				case "1":
@@ -190,14 +193,14 @@ public class Interactor {
 			System.out.println("2. Create a new account");
 			System.out.println("3. Delete an existing account");
 			System.out.println("4. Make a transaction");
-			System.out.println("5. Logout");
+			System.out.println("5. View your transactions");
+			System.out.println("6. Logout");
 			System.out.print("\nSelection: ");
 			String choice = s.nextLine().toLowerCase().trim();
 			log.trace("Menu selection = {}", choice);
 			switch(choice) {
 			case "1":
 			case "1.":
-			case "view":
 				return log.traceExit(1);
 			case "2":
 			case "2.":
@@ -213,9 +216,12 @@ public class Interactor {
 				return log.traceExit(4);
 			case "5":
 			case "5.":
+				return log.traceExit(5);
+			case "6":
+			case "6.":
 			case "logout":
 			case "log out":
-				return log.traceExit(5);
+				return log.traceExit(6);
 			default:
 				System.out.println("\nYour selection could not be processed.");
 				System.out.println("\nPlease select the number of the option you desire.\n");
@@ -233,13 +239,50 @@ public class Interactor {
 		}
 		catch (NoSuchElementException e) {
 			log.error("Error occured while trying to retrieve user info from database");
-			System.out.println("There was an error in retrieving account information");
+			System.out.println("\nThere was an error in retrieving account information");
 		}
 		if (unpacked != null) {
-			System.out.println("\nThe following account belonging to you were found:\n");
+			System.out.println("\nThe following accounts belonging to you were found:\n");
 			System.out.println("Account ID\tBalance");
 			for (Account a : unpacked) {
 				System.out.println(a.getAccountID() + "\t\t" + a.getBalance());
+			}
+		}
+		System.out.println("\nPlease hit ENTER to be taken back to the main menu.");
+		s.nextLine();
+		log.traceExit();
+	}
+	
+	public void viewTransaction(Scanner s, User user) {
+		log.traceEntry("User = {}", user.getUserID());
+		Optional<List<Account>> accounts = accountService.getUserAccounts(user.getUserID());
+		List<Account> unpacked = null;
+		try {
+			unpacked = accounts.get();
+		}
+		catch (NoSuchElementException e) {
+			log.error("Error occured while trying to retrieve user info from database");
+			System.out.println("\nThere was an error in retrieving account information");
+		}
+		Set<Transaction> allTrans = new HashSet<Transaction>();
+		if (unpacked != null) {
+			for (Account a : unpacked) {
+				List<Transaction> trans = transactionService.getAllTransactionsForAccount(a.getAccountID()).get();
+				for (Transaction t: trans) {
+					allTrans.add(t);
+				}
+			}
+		}
+		List<Transaction> allTransList = new ArrayList<Transaction>(allTrans);
+		allTransList.sort(new TransactionComparator());
+		if (!allTransList.isEmpty()) {
+			
+			System.out.println("The following transactions for your accounts were found:\n");
+			System.out.println(String.format("%-15s %-15s %-15s %-15s %-15s",
+					"ID", "Account 1", "Account 2", "Type", "Time"));
+			for (Transaction t : allTransList) {
+				System.out.println(String.format("%-15s %-15s %-15s %-15s %-30s",
+						t.getTransactionID(), t.getAccountID1(), t.getAccountID2(), t.getTransType(), t.getTransTime()));
 			}
 		}
 		System.out.println("\nPlease hit ENTER to be taken back to the main menu.");
@@ -579,4 +622,14 @@ public class Interactor {
 		System.out.print("Please enter password: ");
 		return log.traceExit(s.nextLine());
 	}
+}
+
+
+class TransactionComparator implements Comparator<Transaction> {
+
+	@Override
+	public int compare(Transaction t1, Transaction t2) {
+		return t1.getTransactionID() - (t2.getTransactionID());
+	}
+	
 }

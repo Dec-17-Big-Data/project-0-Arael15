@@ -195,4 +195,47 @@ public class UserOracle implements UserDao {
 		return Optional.empty();
 	}
 
+	@Override
+	public Optional<Boolean> updateUser(Integer id, String update, String type) {
+		log.traceEntry("id = {}, update = {}, field = {}", id, update, type);
+		Connection con = ConnectionUtil.getConnection();
+
+		if (con == null) {
+			log.traceExit(Optional.empty());
+			return Optional.empty();
+		}
+		
+		try {
+			String sql = "";
+			switch (type) {
+			case "firstName":
+				sql = "call update_user_fname(?, ?)";
+				break;
+			case "lastName":
+				sql = "call update_user_lname(?, ?)";
+				break;
+			case "username":
+				sql = "call update_user_uname(?, ?)";
+				break;
+			case "password":
+				sql = "call update_user_pass(?, ?)";
+				break;
+			}
+			CallableStatement cs = con.prepareCall(sql);
+			cs.setInt(1, id);
+			cs.setString(2, update);
+			
+			boolean result = cs.execute();
+			
+			return log.traceExit(Optional.of(result));
+		}
+		catch (SQLException e) {
+			log.catching(e);
+			log.error("SQLException occurred", e);
+		}
+		
+		log.traceExit(Optional.empty());
+		return Optional.empty();
+	}
+
 }

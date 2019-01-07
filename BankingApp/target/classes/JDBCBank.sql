@@ -77,7 +77,7 @@ create or replace procedure
         insert into transaction
             (account1, account2, amount, transaction_type, transaction_id, transaction_time)
             values
-            (a_id, null, a, 'deposit', transaction_seq.nextval, localtimestamp);
+            (a_id, null, a, 'deposit   ', transaction_seq.nextval, localtimestamp);
         update account
             set balance = (select balance from account where account_id = a_id) + a where account_id = a_id;
         t_id := transaction_seq.currval;
@@ -105,7 +105,7 @@ create or replace procedure
         insert into transaction
             (account1, account2, amount, transaction_type, transaction_id, transaction_time)
             values
-            (a_id1, a_id2, a, 'transfer', transaction_seq.nextval, localtimestamp);
+            (a_id1, a_id2, a, 'transfer  ', transaction_seq.nextval, localtimestamp);
         update account
             set balance = (select balance from account where account_id = a_id1) - a where account_id = a_id1;
         update account
@@ -127,6 +127,42 @@ create or replace procedure
     remove_account(a_id number) as
     begin
         delete from account where account_id = a_id;
+        commit;
+    end;
+/
+
+create or replace procedure
+    update_user_fname(u_id number, f_name varchar2) as
+    begin
+        update users
+            set first_name = f_name where user_id = u_id;
+        commit;
+    end;
+/
+
+create or replace procedure
+    update_user_lname(u_id number, l_name varchar2) as
+    begin
+        update users
+            set last_name = l_name where user_id = u_id;
+        commit;
+    end;
+/
+
+create or replace procedure
+    update_user_uname(u_id number, uname varchar2) as
+    begin
+        update users
+            set username = uname where user_id = u_id;
+        commit;
+    end;
+/
+
+create or replace procedure
+    update_user_pass(u_id number, pass varchar2) as
+    begin
+        update users
+            set user_password = pass where user_id = u_id;
         commit;
     end;
 /

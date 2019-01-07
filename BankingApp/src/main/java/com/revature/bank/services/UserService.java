@@ -55,4 +55,9 @@ public class UserService {
 		log.traceEntry("id = {}", id);
 		return log.traceExit(userDao.deleteUser(id));
 	}
+	
+	public Optional<Boolean> updateUser(Integer id, String update, String type){
+		log.traceEntry();
+		return log.traceExit(userDao.updateUser(id, update, type));
+	}
 }

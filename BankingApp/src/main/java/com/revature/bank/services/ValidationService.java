@@ -83,10 +83,11 @@ public class ValidationService {
 		User user = null;
 		Optional<User> lookup = userServ.getUserByName(name);
 		try {
-			user = lookup.get();
+			user = lookup.get();	
 		}
 		catch (NoSuchElementException e) {
 			log.warn("user not found");
+			throw new PasswordMismatchException();
 		}
 		if (user.getPassword().equals(pass)) {
 			return log.traceExit(true);
@@ -102,9 +103,11 @@ public class ValidationService {
 		Optional<Account> lookup = accountServ.getAccount(id);
 		try {
 			account = lookup.get();
+			
 		}
 		catch (NoSuchElementException e) {
 			log.warn("account not found");
+			throw new InsufficientBalanceException();
 		}
 		if (account.getBalance() >= amount) {
 			return log.traceExit(true);
@@ -156,12 +159,13 @@ public class ValidationService {
 		Optional<Account> lookup = accountServ.getAccount(id);
 		try {
 			account = lookup.get();
+			if (account.getBalance() == 0) {
+				return log.traceExit(true);
+			}
 		}
 		catch (NoSuchElementException e) {
 			log.warn("account does not exist");
-		}
-		if (account.getBalance() == 0) {
-			return log.traceExit(true);
+			throw new AccountNotEmptyException();
 		}
 		log.info("account balance not 0");
 		throw new AccountNotEmptyException();

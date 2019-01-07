@@ -14,11 +14,13 @@ public class JDBCBank {
 	private static ValidationService validator;
 	private static User user;
 	private static final Logger log = LogManager.getLogger(JDBCBank.class);
+	private static SuperInteractor superInteractor;
 	
 	public static void main(String[] args) {
-		log.traceEntry("Session started");
+		log.info("Session started");
 		Scanner s = new Scanner(System.in);
 		interactor = Interactor.getInteractor();
+		superInteractor = SuperInteractor.getSuperInteractor();
 		validator = ValidationService.getValidationService();
 		Boolean registering = interactor.greet(s);
 		while (registering) {
@@ -40,8 +42,35 @@ public class JDBCBank {
 			break;
 		}
 		while (loggedInSuper) {
-			System.out.println("Success!");
-			loggedInSuper = false;
+			Integer choice = superInteractor.selectMenuOption(s);
+			switch (choice) {
+			case 1:
+				superInteractor.viewUser(s);
+				break;
+			case 2:
+				superInteractor.viewAccount(s);
+				break;
+			case 3:
+				superInteractor.updateInfo(s);
+				break;
+			case 4:
+				superInteractor.createNewUser(s);
+				break;
+			case 5:
+				superInteractor.createNewAccount(s);
+				break;
+			case 6:
+				superInteractor.deleteUser(s);
+				break;
+			case 7:
+				superInteractor.deleteAllUsers(s);
+				break;
+			case 8:
+				loggedInSuper = false;
+				break;
+			default:
+				break;
+			}
 		}
 		while (loggedIn) {
 			Integer choice = interactor.selectMenuOption(s);
@@ -59,6 +88,9 @@ public class JDBCBank {
 				interactor.makeTransaction(s, user);
 				break;
 			case 5:
+				interactor.viewTransaction(s, user);
+				break;
+			case 6:
 				loggedIn = false;
 				break;
 			default:
@@ -67,7 +99,7 @@ public class JDBCBank {
 		}
 		System.out.println("\nThank you for using JDBCBank today!\n");
 		s.close();
-		log.traceExit("Session terminated\n\n");
+		log.info("Session terminated\n\n");
 		
 	}
 }
