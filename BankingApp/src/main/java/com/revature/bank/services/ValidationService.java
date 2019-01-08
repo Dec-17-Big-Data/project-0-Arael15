@@ -178,10 +178,10 @@ public class ValidationService {
 			return log.traceExit(passwordIsCorrect(username, password));
 		}
 		catch (UserNotFoundException e) {
-			System.out.println("No account can be found with that username.");
+			System.out.println("\nNo account can be found with that username.");
 		}
 		catch (PasswordMismatchException e) {
-			System.out.println("That password does not match that user account.");
+			System.out.println("\nThat password does not match that user account.");
 		}
 		return log.traceExit(false);
 	}

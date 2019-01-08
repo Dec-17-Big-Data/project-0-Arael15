@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JDBCBank.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankingApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.bank.util</a> &gt; <span class="el_source">JDBCBank.java</span></div><h1>JDBCBank.java</h1><pre class="source lang-java linenums">package com.revature.bank.util;
+
+import java.util.Scanner;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.revature.bank.model.User;
+import com.revature.bank.services.ValidationService;
+
+<span class="nc" id="L11">public class JDBCBank {</span>
+	
+	private static Interactor interactor;
+	private static ValidationService validator;
+	private static User user;
+<span class="nc" id="L16">	private static final Logger log = LogManager.getLogger(JDBCBank.class);</span>
+<span class="nc" id="L17">	private static SuperInteractor superInteractor;</span>
+	
+	public static void main(String[] args) {
+<span class="nc" id="L20">		log.info(&quot;Session started&quot;);</span>
+<span class="nc" id="L21">		Scanner s = new Scanner(System.in);</span>
+<span class="nc" id="L22">		interactor = Interactor.getInteractor();</span>
+<span class="nc" id="L23">		superInteractor = SuperInteractor.getSuperInteractor();</span>
+<span class="nc" id="L24">		validator = ValidationService.getValidationService();</span>
+<span class="nc" id="L25">		Boolean registering = interactor.greet(s);</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">		while (registering) {</span>
+<span class="nc" id="L27">			registering = interactor.register(s);</span>
+		}
+<span class="nc" id="L29">		boolean loggedIn = false;</span>
+<span class="nc" id="L30">		boolean loggedInSuper = false;</span>
+<span class="nc bnc" id="L31" title="All 6 branches missed.">		while ((!loggedIn || user == null) &amp;&amp; !loggedInSuper) {</span>
+<span class="nc" id="L32">			String username = interactor.getUsername(s);</span>
+<span class="nc" id="L33">			String password = interactor.getPassword(s);</span>
+<span class="nc" id="L34">			loggedInSuper = validator.isSuperUser(username, password);</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">			if (!loggedInSuper) {</span>
+<span class="nc" id="L36">				loggedIn = validator.isValidUser(username, password);</span>
+			}
+<span class="nc bnc" id="L38" title="All 2 branches missed.">			if (loggedIn) {</span>
+<span class="nc" id="L39">				user = interactor.retrieveUserInfo(username);</span>
+<span class="nc" id="L40">				System.out.println(&quot;\nWelcome to JDBCBank, &quot; + username + &quot;!\n&quot;);</span>
+			}
+		}
+<span class="nc bnc" id="L43" title="All 2 branches missed.">		while (loggedInSuper) {</span>
+<span class="nc" id="L44">			Integer choice = superInteractor.selectMenuOption(s);</span>
+<span class="nc bnc" id="L45" title="All 9 branches missed.">			switch (choice) {</span>
+			case 1:
+<span class="nc" id="L47">				superInteractor.viewUser(s);</span>
+<span class="nc" id="L48">				break;</span>
+			case 2:
+<span class="nc" id="L50">				superInteractor.viewAccount(s);</span>
+<span class="nc" id="L51">				break;</span>
+			case 3:
+<span class="nc" id="L53">				superInteractor.updateInfo(s);</span>
+<span class="nc" id="L54">				break;</span>
+			case 4:
+<span class="nc" id="L56">				superInteractor.createNewUser(s);</span>
+<span class="nc" id="L57">				break;</span>
+			case 5:
+<span class="nc" id="L59">				superInteractor.createNewAccount(s);</span>
+<span class="nc" id="L60">				break;</span>
+			case 6:
+<span class="nc" id="L62">				superInteractor.deleteUser(s);</span>
+<span class="nc" id="L63">				break;</span>
+			case 7:
+<span class="nc" id="L65">				superInteractor.deleteAllUsers(s);</span>
+<span class="nc" id="L66">				break;</span>
+			case 8:
+<span class="nc" id="L68">				loggedInSuper = false;</span>
+<span class="nc" id="L69">				break;</span>
+			default:
+				break;
+			}
+		}
+<span class="nc bnc" id="L74" title="All 2 branches missed.">		while (loggedIn) {</span>
+<span class="nc" id="L75">			Integer choice = interactor.selectMenuOption(s);</span>
+<span class="nc bnc" id="L76" title="All 7 branches missed.">			switch (choice) {</span>
+			case 1:
+<span class="nc" id="L78">				interactor.viewAccount(s, user);</span>
+<span class="nc" id="L79">				break;</span>
+			case 2:
+<span class="nc" id="L81">				interactor.createAccount(s, user);</span>
+<span class="nc" id="L82">				break;</span>
+			case 3:
+<span class="nc" id="L84">				interactor.deleteAccount(s, user);</span>
+<span class="nc" id="L85">				break;</span>
+			case 4:
+<span class="nc" id="L87">				interactor.makeTransaction(s, user);</span>
+<span class="nc" id="L88">				break;</span>
+			case 5:
+<span class="nc" id="L90">				interactor.viewTransaction(s, user);</span>
+<span class="nc" id="L91">				break;</span>
+			case 6:
+<span class="nc" id="L93">				loggedIn = false;</span>
+<span class="nc" id="L94">				break;</span>
+			default:
+				break;
+			}
+		}
+<span class="nc" id="L99">		System.out.println(&quot;\nThank you for using JDBCBank today!\n&quot;);</span>
+<span class="nc" id="L100">		s.close();</span>
+<span class="nc" id="L101">		log.info(&quot;Session terminated\n\n&quot;);</span>
+		
+<span class="nc" id="L103">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

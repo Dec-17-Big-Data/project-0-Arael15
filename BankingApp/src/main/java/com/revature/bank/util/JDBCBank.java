@@ -28,7 +28,7 @@ public class JDBCBank {
 		}
 		boolean loggedIn = false;
 		boolean loggedInSuper = false;
-		while (!loggedIn || user == null) {
+		while ((!loggedIn || user == null) && !loggedInSuper) {
 			String username = interactor.getUsername(s);
 			String password = interactor.getPassword(s);
 			loggedInSuper = validator.isSuperUser(username, password);
@@ -39,7 +39,6 @@ public class JDBCBank {
 				user = interactor.retrieveUserInfo(username);
 				System.out.println("\nWelcome to JDBCBank, " + username + "!\n");
 			}
-			break;
 		}
 		while (loggedInSuper) {
 			Integer choice = superInteractor.selectMenuOption(s);

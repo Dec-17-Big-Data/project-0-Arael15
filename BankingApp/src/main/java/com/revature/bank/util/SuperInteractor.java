@@ -327,38 +327,38 @@ public class SuperInteractor {
 		
 		// Take input for username
 		while (!goodName ) {
-			System.out.println("Username must be at least 8 characters.");
-			System.out.print("Please enter desired username: ");
+			System.out.println("\nUsername must be at least 8 characters.");
+			System.out.print("\nPlease enter desired username: ");
 			choice = s.nextLine();
 			try {
 				goodName = validator.userIsUnique(choice);
 			}
 			catch (InvalidUsernameException e) {
 				log.info("Duplicate username {}", choice);
-				System.out.println("That username is not available.");
-				System.out.println("Please try again.");
+				System.out.println("\nThat username is not available.");
+				System.out.println("\nPlease try again.");
 			}
 			if (goodName) {
 				if (choice.length() < 8) {
-					System.out.println("Username is of insufficient length");
+					System.out.println("\nUsername is of insufficient length");
 					goodName = false;
 				}
 			}
 		}
-		System.out.println("\nThat username is available.\n");
+		System.out.println("\nThat username is available.");
 		log.trace("Username accepted");
 		
 		// Take input for password
 		boolean goodPass = false;
 		while (!goodPass) {
-			System.out.print("Please enter desired password: ");
+			System.out.print("\nPlease enter desired password: ");
 			pass = s.nextLine();
 			if (pass.length() > 0) {
 				goodPass = true;
-				System.out.println("\nThat password is acceptable\n");
+				System.out.println("\nThat password is acceptable.");
 			}
 			else {
-				System.out.println("Password cannot be empty");
+				System.out.println("\nPassword cannot be empty");
 			}
 		}
 		log.trace("Password accepted");
@@ -366,13 +366,13 @@ public class SuperInteractor {
 		// Take input for first name
 		boolean goodFirst = false;
 		while (!goodFirst) {
-			System.out.print("Please enter your first name: ");
+			System.out.print("\nPlease enter first name: ");
 			first = s.nextLine();
 			if (first.length() > 0) {
 				goodFirst = true;
 			}
 			else {
-				System.out.println("First name cannot be empty");
+				System.out.println("\nFirst name cannot be empty");
 			}
 		}
 		log.trace("First name accepted");
@@ -380,13 +380,13 @@ public class SuperInteractor {
 		//	Take input for last name
 		boolean goodLast = false;
 		while (!goodLast) {
-			System.out.print("Please enter your last name: ");
+			System.out.print("Please enter last name: ");
 			last = s.nextLine();
 			if (last.length() > 0) {
 				goodLast = true;
 			}
 			else {
-				System.out.println("Last name cannot be empty");
+				System.out.println("\nLast name cannot be empty");
 			}
 		}
 		log.trace("Last name accepted");
@@ -404,7 +404,7 @@ public class SuperInteractor {
 		}
 		catch (NoSuchElementException e) {
 			log.error("New user could not be created");
-			System.out.println("There was an error creating a new user.");
+			System.out.println("\nThere was an error creating a new user.");
 		}
 		
 	}

@@ -48,7 +48,7 @@ public class Interactor {
 		System.out.println("Welcome to JDBCBank!\n");
 		boolean selected = false;
 			while (!selected) {
-				System.out.println("Please select one of the following:");
+				System.out.println("\nPlease select one of the following:");
 				System.out.println("1. Log in as a returning user");
 				System.out.println("2. Register a new user");
 				System.out.print("\nSelection: ");
@@ -68,8 +68,8 @@ public class Interactor {
 					selected = true;
 					return log.traceExit(true);
 				default:
-					System.out.println("Your choice could not be recognized.");
-					System.out.println("Please enter a number for your selection.\n");
+					System.out.println("\nYour choice could not be recognized.");
+					System.out.println("\nPlease enter a number for your selection.");
 			}
 		}
 		return log.traceExit(false);
@@ -82,38 +82,38 @@ public class Interactor {
 		
 		// Take input for username
 		while (!goodName ) {
-			System.out.println("Username must be at least 8 characters.");
-			System.out.print("Please enter desired username: ");
+			System.out.println("\nUsername must be at least 8 characters.");
+			System.out.print("\nPlease enter desired username: ");
 			choice = s.nextLine();
 			try {
 				goodName = validator.userIsUnique(choice);
 			}
 			catch (InvalidUsernameException e) {
 				log.info("Duplicate username {}", choice);
-				System.out.println("That username is not available.");
-				System.out.println("Please try again.");
+				System.out.println("\nThat username is not available.");
+				System.out.println("\nPlease try again.");
 			}
 			if (goodName) {
 				if (choice.length() < 8) {
-					System.out.println("Username is of insufficient length");
+					System.out.println("\nUsername is of insufficient length");
 					goodName = false;
 				}
 			}
 		}
-		System.out.println("\nThat username is available.\n");
+		System.out.println("\nThat username is available.");
 		log.trace("Username accepted");
 		
 		// Take input for password
 		boolean goodPass = false;
 		while (!goodPass) {
-			System.out.print("Please enter desired password: ");
+			System.out.print("\nPlease enter desired password: ");
 			pass = s.nextLine();
 			if (pass.length() > 0) {
 				goodPass = true;
 				System.out.println("\nThat password is acceptable\n");
 			}
 			else {
-				System.out.println("Password cannot be empty");
+				System.out.println("\nPassword cannot be empty");
 			}
 		}
 		log.trace("Password accepted");
@@ -155,7 +155,7 @@ public class Interactor {
 			System.out.println("Username: " + unpacked.getUsername());
 			System.out.println("\nYour user ID is " + unpacked.getUserID());
 			System.out.println("Please keep this number for your records.");
-			System.out.println("\nYou will now be redirected to the login screen.\n");
+			System.out.println("\nYou will now be redirected to the login screen.");
 			log.info("New user {} created", unpacked.getUserID());
 		}
 		catch (NoSuchElementException e) {
@@ -239,7 +239,7 @@ public class Interactor {
 		}
 		catch (NoSuchElementException e) {
 			log.error("Error occured while trying to retrieve user info from database");
-			System.out.println("\nThere was an error in retrieving account information");
+			System.out.println("\nThere was an error in retrieving account information.");
 		}
 		if (unpacked != null) {
 			System.out.println("\nThe following accounts belonging to you were found:\n");
@@ -262,7 +262,7 @@ public class Interactor {
 		}
 		catch (NoSuchElementException e) {
 			log.error("Error occured while trying to retrieve user info from database");
-			System.out.println("\nThere was an error in retrieving account information");
+			System.out.println("\nThere was an error in retrieving account information.");
 		}
 		Set<Transaction> allTrans = new HashSet<Transaction>();
 		if (unpacked != null) {
@@ -328,7 +328,7 @@ public class Interactor {
 		}
 		catch (NumberFormatException e) {
 			log.warn("Non-integer account ID input");
-			System.out.println("\nThat is not a valid Account ID");
+			System.out.println("\nThat is not a valid Account ID.");
 		}
 		if (numId != 0) {
 			boolean owned = false;
@@ -337,7 +337,7 @@ public class Interactor {
 			}
 			catch (AccountNotOwnedException e) {
 				log.warn("Account {} does not belong to User {}", numId, user.getUserID());
-				System.out.println("\nNo account owned by you could be found with that ID");
+				System.out.println("\nNo account owned by you could be found with that ID.");
 			}
 			if (owned) {
 				boolean empty = false;
@@ -480,7 +480,7 @@ public class Interactor {
 		else {
 			System.out.println("\nTransaction successful.");
 			System.out.println("\nThe ID for this transaction is " + transId + ".");
-			System.out.println("\nPlease keep this number for your records");
+			System.out.println("\nPlease keep this number for your records.");
 			log.traceExit("Successful transaction {}", transId);
 		}
 		
@@ -548,7 +548,7 @@ public class Interactor {
 		else {
 			System.out.println("\nTransaction successful.");
 			System.out.println("\nThe ID for this transaction is " + transId + ".");
-			System.out.println("\nPlease keep this number for your records");
+			System.out.println("\nPlease keep this number for your records.");
 			log.traceExit("Successful transaction {}", transId);
 		}
 	}

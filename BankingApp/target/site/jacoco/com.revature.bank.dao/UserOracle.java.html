@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserOracle.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankingApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.bank.dao</a> &gt; <span class="el_source">UserOracle.java</span></div><h1>UserOracle.java</h1><pre class="source lang-java linenums">package com.revature.bank.dao;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.revature.bank.model.User;
+import com.revature.bank.util.ConnectionUtil;
+
+public class UserOracle implements UserDao {
+	private static UserOracle userOracle;
+<span class="fc" id="L20">	private static final Logger log = LogManager.getLogger(UserOracle.class);</span>
+
+<span class="fc" id="L22">	private UserOracle() {</span>
+		
+<span class="fc" id="L24">	}</span>
+	
+	public static UserOracle getUserOracle() {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		if (userOracle == null) {</span>
+<span class="fc" id="L28">			userOracle = new UserOracle();</span>
+		}
+<span class="fc" id="L30">		return userOracle;</span>
+	}
+	
+	public Optional&lt;User&gt; getUserByID(Integer id) {
+<span class="fc" id="L34">		log.traceEntry(&quot;id = {}&quot;, id);</span>
+<span class="fc" id="L35">		Connection con = ConnectionUtil.getConnection();</span>
+
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (con == null) {</span>
+<span class="fc" id="L38">			log.traceExit(Optional.empty());</span>
+<span class="fc" id="L39">			return Optional.empty();</span>
+		}
+		
+		try {
+<span class="fc" id="L43">			String sql = &quot;select * from users where user_id = ?&quot;;</span>
+<span class="fc" id="L44">			PreparedStatement ps = con.prepareStatement(sql);</span>
+<span class="fc" id="L45">			ps.setInt(1, id);</span>
+<span class="fc" id="L46">			ResultSet rs = ps.executeQuery();</span>
+			
+<span class="fc" id="L48">			User user = null;</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			while(rs.next()) {</span>
+<span class="fc" id="L51">			user = new User(rs.getString(&quot;username&quot;), rs.getString(&quot;user_password&quot;), rs.getString(&quot;first_name&quot;),</span>
+<span class="fc" id="L52">					rs.getString(&quot;last_name&quot;), rs.getInt(&quot;user_id&quot;));</span>
+			}
+			
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			if (user == null) {</span>
+<span class="fc" id="L56">				log.traceExit(Optional.empty());</span>
+<span class="fc" id="L57">				return Optional.empty();</span>
+			}
+			
+<span class="fc" id="L60">			return log.traceExit(Optional.of(user));</span>
+			
+<span class="nc" id="L62">		} catch (SQLException e) {</span>
+<span class="nc" id="L63">			log.catching(e);</span>
+<span class="nc" id="L64">			log.error(&quot;SQLExcpetion occurred&quot;, e);</span>
+		}
+		
+<span class="nc" id="L67">		log.traceExit(Optional.empty());</span>
+<span class="nc" id="L68">		return Optional.empty();</span>
+	}
+
+	public Optional&lt;User&gt; getUserByName(String name) {
+<span class="fc" id="L72">		log.traceEntry(&quot;name = {}&quot;, name);</span>
+<span class="fc" id="L73">		Connection con = ConnectionUtil.getConnection();</span>
+
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		if (con == null) {</span>
+<span class="fc" id="L76">			log.traceExit(Optional.empty());</span>
+<span class="fc" id="L77">			return Optional.empty();</span>
+		}
+		
+		try {
+<span class="fc" id="L81">			String sql = &quot;select * from users where username = ?&quot;;</span>
+<span class="fc" id="L82">			PreparedStatement ps = con.prepareStatement(sql);</span>
+<span class="fc" id="L83">			ps.setString(1, name);</span>
+<span class="fc" id="L84">			ResultSet rs = ps.executeQuery();</span>
+			
+<span class="fc" id="L86">			User user = null;</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			while(rs.next()) {</span>
+<span class="fc" id="L89">				user = new User(rs.getString(&quot;username&quot;), rs.getString(&quot;user_password&quot;), rs.getString(&quot;first_name&quot;),</span>
+<span class="fc" id="L90">						rs.getString(&quot;last_name&quot;), rs.getInt(&quot;user_id&quot;));</span>
+			}
+			
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (user == null) {</span>
+<span class="fc" id="L94">				log.traceExit(Optional.empty());</span>
+<span class="fc" id="L95">				return Optional.empty();</span>
+			}
+			
+<span class="fc" id="L98">			return log.traceExit(Optional.of(user));</span>
+			
+<span class="nc" id="L100">		} catch (SQLException e) {</span>
+<span class="nc" id="L101">			log.catching(e);</span>
+<span class="nc" id="L102">			log.error(&quot;SQLExcpetion occurred&quot;, e);</span>
+		}
+		
+<span class="nc" id="L105">		log.traceExit(Optional.empty());</span>
+<span class="nc" id="L106">		return Optional.empty();</span>
+	}
+
+	public Optional&lt;List&lt;User&gt;&gt; getAllUsers() {
+<span class="nc" id="L110">		log.traceEntry();</span>
+<span class="nc" id="L111">		Connection con = ConnectionUtil.getConnection();</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">		if (con == null) {</span>
+<span class="nc" id="L114">			log.traceExit(Optional.empty());</span>
+<span class="nc" id="L115">			return Optional.empty();</span>
+		}
+
+		try {
+<span class="nc" id="L119">			String sql = &quot;select * from users&quot;;</span>
+<span class="nc" id="L120">			PreparedStatement ps = con.prepareStatement(sql);</span>
+<span class="nc" id="L121">			ResultSet rs = ps.executeQuery();</span>
+
+<span class="nc" id="L123">			List&lt;User&gt; users = new ArrayList&lt;User&gt;();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">			while (rs.next()) {</span>
+<span class="nc" id="L125">				users.add(new User(rs.getString(&quot;username&quot;), rs.getString(&quot;user_password&quot;), rs.getString(&quot;first_name&quot;),</span>
+<span class="nc" id="L126">						rs.getString(&quot;last_name&quot;), rs.getInt(&quot;user_id&quot;)));</span>
+			}
+<span class="nc" id="L128">			return log.traceExit(Optional.of(users));</span>
+<span class="nc" id="L129">		} catch (SQLException e) {</span>
+<span class="nc" id="L130">			log.catching(e);</span>
+<span class="nc" id="L131">			log.error(&quot;SQLException occurred&quot;, e);</span>
+		}
+		
+<span class="nc" id="L134">		log.traceExit(Optional.empty());</span>
+<span class="nc" id="L135">		return Optional.empty();</span>
+	}
+
+	public Optional&lt;User&gt; createUser(String firstName, String lastName, String userName, String password) {
+<span class="fc" id="L139">		log.traceEntry();</span>
+<span class="fc" id="L140">		Connection con = ConnectionUtil.getConnection();</span>
+
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (con == null) {</span>
+<span class="fc" id="L143">			log.traceExit(Optional.empty());</span>
+<span class="fc" id="L144">			return Optional.empty();</span>
+		}
+		
+		try {
+<span class="fc" id="L148">			String sql = &quot;call add_user(?, ?, ?, ?, ?)&quot;;</span>
+<span class="fc" id="L149">			CallableStatement cs = con.prepareCall(sql);</span>
+<span class="fc" id="L150">			cs.setString(1, firstName);</span>
+<span class="fc" id="L151">			cs.setString(2, lastName);</span>
+<span class="fc" id="L152">			cs.setString(3, userName);</span>
+<span class="fc" id="L153">			cs.setString(4, password);</span>
+<span class="fc" id="L154">			cs.registerOutParameter(5, java.sql.Types.INTEGER);</span>
+			
+<span class="fc" id="L156">			cs.executeUpdate();</span>
+			
+<span class="fc" id="L158">			User user = new User(userName, password, firstName, lastName, cs.getInt(5));</span>
+			
+<span class="fc" id="L160">			return log.traceExit(Optional.of(user));</span>
+		}
+<span class="fc" id="L162">		catch (SQLException e) {</span>
+<span class="fc" id="L163">			log.catching(e);</span>
+<span class="fc" id="L164">			log.error(&quot;SQLException occurred&quot;, e);</span>
+		}
+		
+<span class="fc" id="L167">		log.traceExit(Optional.empty());</span>
+<span class="fc" id="L168">		return Optional.empty();</span>
+	}
+
+	public Optional&lt;Boolean&gt; deleteUser(Integer id) {
+<span class="nc" id="L172">		log.traceEntry(&quot;id = {}&quot;, id);</span>
+<span class="nc" id="L173">		Connection con = ConnectionUtil.getConnection();</span>
+
+<span class="nc bnc" id="L175" title="All 2 branches missed.">		if (con == null) {</span>
+<span class="nc" id="L176">			log.traceExit(Optional.empty());</span>
+<span class="nc" id="L177">			return Optional.empty();</span>
+		}
+		
+		try {
+<span class="nc" id="L181">			String sql = &quot;call remove_user(?)&quot;;</span>
+<span class="nc" id="L182">			CallableStatement cs = con.prepareCall(sql);</span>
+<span class="nc" id="L183">			cs.setInt(1, id);</span>
+			
+<span class="nc" id="L185">			boolean result = cs.execute();</span>
+			
+<span class="nc" id="L187">			return log.traceExit(Optional.of(result));</span>
+		}
+<span class="nc" id="L189">		catch (SQLException e) {</span>
+<span class="nc" id="L190">			log.catching(e);</span>
+<span class="nc" id="L191">			log.error(&quot;SQLException occurred&quot;, e);</span>
+		}
+		
+<span class="nc" id="L194">		log.traceExit(Optional.empty());</span>
+<span class="nc" id="L195">		return Optional.empty();</span>
+	}
+
+	@Override
+	public Optional&lt;Boolean&gt; updateUser(Integer id, String update, String type) {
+<span class="nc" id="L200">		log.traceEntry(&quot;id = {}, update = {}, field = {}&quot;, id, update, type);</span>
+<span class="nc" id="L201">		Connection con = ConnectionUtil.getConnection();</span>
+
+<span class="nc bnc" id="L203" title="All 2 branches missed.">		if (con == null) {</span>
+<span class="nc" id="L204">			log.traceExit(Optional.empty());</span>
+<span class="nc" id="L205">			return Optional.empty();</span>
+		}
+		
+		try {
+<span class="nc" id="L209">			String sql = &quot;&quot;;</span>
+<span class="nc bnc" id="L210" title="All 13 branches missed.">			switch (type) {</span>
+			case &quot;firstName&quot;:
+<span class="nc" id="L212">				sql = &quot;call update_user_fname(?, ?)&quot;;</span>
+<span class="nc" id="L213">				break;</span>
+			case &quot;lastName&quot;:
+<span class="nc" id="L215">				sql = &quot;call update_user_lname(?, ?)&quot;;</span>
+<span class="nc" id="L216">				break;</span>
+			case &quot;username&quot;:
+<span class="nc" id="L218">				sql = &quot;call update_user_uname(?, ?)&quot;;</span>
+<span class="nc" id="L219">				break;</span>
+			case &quot;password&quot;:
+<span class="nc" id="L221">				sql = &quot;call update_user_pass(?, ?)&quot;;</span>
+				break;
+			}
+<span class="nc" id="L224">			CallableStatement cs = con.prepareCall(sql);</span>
+<span class="nc" id="L225">			cs.setInt(1, id);</span>
+<span class="nc" id="L226">			cs.setString(2, update);</span>
+			
+<span class="nc" id="L228">			boolean result = cs.execute();</span>
+			
+<span class="nc" id="L230">			return log.traceExit(Optional.of(result));</span>
+		}
+<span class="nc" id="L232">		catch (SQLException e) {</span>
+<span class="nc" id="L233">			log.catching(e);</span>
+<span class="nc" id="L234">			log.error(&quot;SQLException occurred&quot;, e);</span>
+		}
+		
+<span class="nc" id="L237">		log.traceExit(Optional.empty());</span>
+<span class="nc" id="L238">		return Optional.empty();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
