@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.bank.test.ValidationTest
+-------------------------------------------------------------------------------
+Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.728 s - in com.revature.bank.test.ValidationTest

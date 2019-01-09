@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankingApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.bank.services</a> &gt; <span class="el_source">ValidationService.java</span></div><h1>ValidationService.java</h1><pre class="source lang-java linenums">package com.revature.bank.services;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.revature.bank.exceptions.AccountNotEmptyException;
+import com.revature.bank.exceptions.AccountNotOwnedException;
+import com.revature.bank.exceptions.InsufficientBalanceException;
+import com.revature.bank.exceptions.InvalidUsernameException;
+import com.revature.bank.exceptions.PasswordMismatchException;
+import com.revature.bank.exceptions.UserNotFoundException;
+import com.revature.bank.model.Account;
+import com.revature.bank.model.User;
+
+public class ValidationService {
+
+	private static ValidationService validationService;
+<span class="fc" id="L25">	private static final Logger log = LogManager.getLogger(ValidationService.class);</span>
+	
+<span class="fc" id="L27">	private ValidationService() {</span>
+		
+<span class="fc" id="L29">	}</span>
+	
+	public static ValidationService getValidationService() {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		if (validationService == null) {</span>
+<span class="fc" id="L33">			validationService = new ValidationService();</span>
+		}
+<span class="fc" id="L35">		return validationService;</span>
+	}
+	
+	public boolean userIsUnique(String name) throws InvalidUsernameException {
+<span class="fc" id="L39">		log.traceEntry(&quot;name = {}&quot;, name);</span>
+<span class="fc" id="L40">		UserService userServ = UserService.getUserService();</span>
+<span class="fc" id="L41">		Optional&lt;User&gt; user = userServ.getUserByName(name);</span>
+		try {
+<span class="fc" id="L43">			user.get();</span>
+<span class="fc" id="L44">		}</span>
+<span class="fc" id="L45">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L46">			return log.traceExit(true);</span>
+		}
+<span class="fc" id="L48">		log.info(&quot;Duplicate username&quot;);</span>
+<span class="fc" id="L49">		throw new InvalidUsernameException();</span>
+	}
+	
+	public boolean userExists(String name) throws UserNotFoundException {
+<span class="fc" id="L53">		log.traceEntry(&quot;name = {}&quot;, name);</span>
+<span class="fc" id="L54">		UserService userServ = UserService.getUserService();</span>
+<span class="fc" id="L55">		Optional&lt;User&gt; user = userServ.getUserByName(name);</span>
+		try {
+<span class="fc" id="L57">			user.get();</span>
+<span class="fc" id="L58">		}</span>
+<span class="fc" id="L59">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L60">			log.info(&quot;user does not exist&quot;);</span>
+<span class="fc" id="L61">			throw new UserNotFoundException();</span>
+		}
+<span class="fc" id="L63">		return log.traceExit(true);</span>
+	}
+	
+	public boolean userExists(Integer id) throws UserNotFoundException {
+<span class="fc" id="L67">		log.traceEntry(&quot;id = {}&quot;, id);</span>
+<span class="fc" id="L68">		UserService userServ = UserService.getUserService();</span>
+<span class="fc" id="L69">		Optional&lt;User&gt; user = userServ.getUserByID(id);</span>
+		try {
+<span class="fc" id="L71">			user.get();</span>
+<span class="fc" id="L72">		}</span>
+<span class="fc" id="L73">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L74">			log.info(&quot;user does not exist&quot;);</span>
+<span class="fc" id="L75">			throw new UserNotFoundException();</span>
+		}
+<span class="fc" id="L77">		return log.traceExit(true);</span>
+	}
+	
+	public boolean passwordIsCorrect(String name, String pass) throws PasswordMismatchException {
+<span class="fc" id="L81">		log.traceEntry(&quot;username = {}, password = {}&quot;, name, pass);</span>
+<span class="fc" id="L82">		UserService userServ = UserService.getUserService();</span>
+<span class="fc" id="L83">		User user = null;</span>
+<span class="fc" id="L84">		Optional&lt;User&gt; lookup = userServ.getUserByName(name);</span>
+		try {
+<span class="fc" id="L86">			user = lookup.get();	</span>
+<span class="fc" id="L87">		}</span>
+<span class="fc" id="L88">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L89">			log.warn(&quot;user not found&quot;);</span>
+<span class="fc" id="L90">			throw new PasswordMismatchException();</span>
+		}
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (user.getPassword().equals(pass)) {</span>
+<span class="fc" id="L93">			return log.traceExit(true);</span>
+		}
+<span class="fc" id="L95">		log.info(&quot;password does not match&quot;);</span>
+<span class="fc" id="L96">		throw new PasswordMismatchException();</span>
+	}
+	
+	public boolean balanceIsSufficient(Integer id, Double amount) throws InsufficientBalanceException {
+<span class="fc" id="L100">		log.traceEntry(&quot;id = {}, amount = {}&quot;, id, amount);</span>
+<span class="fc" id="L101">		AccountService accountServ = AccountService.getAccountService();</span>
+<span class="fc" id="L102">		Account account = null;</span>
+<span class="fc" id="L103">		Optional&lt;Account&gt; lookup = accountServ.getAccount(id);</span>
+		try {
+<span class="fc" id="L105">			account = lookup.get();</span>
+			
+<span class="fc" id="L107">		}</span>
+<span class="fc" id="L108">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L109">			log.warn(&quot;account not found&quot;);</span>
+<span class="fc" id="L110">			throw new InsufficientBalanceException();</span>
+		}
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (account.getBalance() &gt;= amount) {</span>
+<span class="fc" id="L113">			return log.traceExit(true);</span>
+		}
+<span class="fc" id="L115">		log.info(&quot;balance insufficient&quot;);</span>
+<span class="fc" id="L116">		throw new InsufficientBalanceException();</span>
+	}
+	
+	public boolean isSuperUser(String name, String pass) {
+<span class="fc" id="L120">		log.traceEntry();</span>
+<span class="fc" id="L121">		Properties props = new Properties();</span>
+		try {
+<span class="fc" id="L123">			InputStream in = new FileInputStream(&quot;src\\main\\resources\\admin.properties&quot;);</span>
+<span class="fc" id="L124">			props.load(in);</span>
+<span class="fc" id="L125">		}</span>
+<span class="nc" id="L126">		catch (IOException e) {</span>
+<span class="nc" id="L127">			return log.traceExit(false);</span>
+		}
+		
+<span class="fc" id="L130">		String superName = props.getProperty(&quot;username&quot;);</span>
+<span class="fc" id="L131">		String superPass = props.getProperty(&quot;password&quot;);</span>
+		
+<span class="pc bpc" id="L133" title="1 of 4 branches missed.">		return log.traceExit(superName.equals(name) &amp;&amp; superPass.equals(pass));</span>
+	}
+	
+	public boolean ownsAccount(Integer id, Integer user) throws AccountNotOwnedException {
+<span class="fc" id="L137">		log.traceEntry(&quot;id = {}, user = {}&quot;, id, user);</span>
+<span class="fc" id="L138">		AccountService accountServ = AccountService.getAccountService();</span>
+<span class="fc" id="L139">		Account account = null;</span>
+<span class="fc" id="L140">		Optional&lt;Account&gt; lookup = accountServ.getAccount(id);</span>
+		try {
+<span class="fc" id="L142">			account = lookup.get();</span>
+<span class="fc" id="L143">		}</span>
+<span class="fc" id="L144">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L145">			log.warn(&quot;account does not exist&quot;);</span>
+<span class="fc" id="L146">			throw new AccountNotOwnedException();</span>
+		}
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (account.getUserID() == user) {</span>
+<span class="fc" id="L149">			return log.traceExit(true);</span>
+		}
+<span class="fc" id="L151">		log.info(&quot;account not owned by user&quot;);</span>
+<span class="fc" id="L152">		throw new AccountNotOwnedException();</span>
+	}
+	
+	public boolean accountIsEmpty(Integer id) {
+<span class="fc" id="L156">		log.traceEntry(&quot;id = {}&quot;, id);</span>
+<span class="fc" id="L157">		AccountService accountServ = AccountService.getAccountService();</span>
+<span class="fc" id="L158">		Account account = null;</span>
+<span class="fc" id="L159">		Optional&lt;Account&gt; lookup = accountServ.getAccount(id);</span>
+		try {
+<span class="fc" id="L161">			account = lookup.get();</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (account.getBalance() == 0) {</span>
+<span class="fc" id="L163">				return log.traceExit(true);</span>
+			}
+		}
+<span class="fc" id="L166">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L167">			log.warn(&quot;account does not exist&quot;);</span>
+<span class="fc" id="L168">			throw new AccountNotEmptyException();</span>
+		}
+<span class="fc" id="L170">		log.info(&quot;account balance not 0&quot;);</span>
+<span class="fc" id="L171">		throw new AccountNotEmptyException();</span>
+	}
+	
+	public boolean isValidUser(String username, String password) {
+<span class="fc" id="L175">		log.traceEntry();</span>
+		try {
+<span class="fc" id="L177">			userExists(username);</span>
+<span class="fc" id="L178">			return log.traceExit(passwordIsCorrect(username, password));</span>
+		}
+<span class="fc" id="L180">		catch (UserNotFoundException e) {</span>
+<span class="fc" id="L181">			System.out.println(&quot;\nNo account can be found with that username.&quot;);</span>
+		}
+<span class="nc" id="L183">		catch (PasswordMismatchException e) {</span>
+<span class="nc" id="L184">			System.out.println(&quot;\nThat password does not match that user account.&quot;);</span>
+		}
+<span class="fc" id="L186">		return log.traceExit(false);</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

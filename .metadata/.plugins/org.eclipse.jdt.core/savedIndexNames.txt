@@ -1,2 +1,0 @@
-INDEX VERSION 1.131+C:\Users\Eddie Smith\Revature\Project0\.metadata\.plugins\org.eclipse.jdt.core
-634298842.index

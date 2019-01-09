@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Interactor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankingApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.bank.util</a> &gt; <span class="el_source">Interactor.java</span></div><h1>Interactor.java</h1><pre class="source lang-java linenums">package com.revature.bank.util;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.revature.bank.exceptions.AccountNotEmptyException;
+import com.revature.bank.exceptions.AccountNotOwnedException;
+import com.revature.bank.exceptions.InsufficientBalanceException;
+import com.revature.bank.exceptions.InvalidUsernameException;
+import com.revature.bank.model.Account;
+import com.revature.bank.model.Transaction;
+import com.revature.bank.model.User;
+import com.revature.bank.services.AccountService;
+import com.revature.bank.services.TransactionService;
+import com.revature.bank.services.UserService;
+import com.revature.bank.services.ValidationService;
+
+public class Interactor {
+
+	private static Interactor interactor;
+<span class="fc" id="L30">	private ValidationService validator = ValidationService.getValidationService();</span>
+<span class="fc" id="L31">	private UserService userService = UserService.getUserService();</span>
+<span class="fc" id="L32">	private AccountService accountService = AccountService.getAccountService();</span>
+<span class="fc" id="L33">	private TransactionService transactionService = TransactionService.getTransactionService();</span>
+<span class="fc" id="L34">	private static final Logger log = LogManager.getLogger(Interactor.class);</span>
+	
+<span class="fc" id="L36">	private Interactor() {</span>
+<span class="fc" id="L37">	}</span>
+	
+	public static Interactor getInteractor() {
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		if (interactor == null) {</span>
+<span class="fc" id="L41">			interactor = new Interactor();</span>
+		}
+<span class="fc" id="L43">		return interactor;</span>
+	}
+	
+	public Boolean greet(Scanner s) {
+<span class="fc" id="L47">		log.traceEntry(&quot;Begin greeting&quot;);</span>
+<span class="fc" id="L48">		System.out.println(&quot;Welcome to JDBCBank!\n&quot;);</span>
+<span class="fc" id="L49">		boolean selected = false;</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">			while (!selected) {</span>
+<span class="fc" id="L51">				System.out.println(&quot;\nPlease select one of the following:&quot;);</span>
+<span class="fc" id="L52">				System.out.println(&quot;1. Log in as a returning user&quot;);</span>
+<span class="fc" id="L53">				System.out.println(&quot;2. Register a new user&quot;);</span>
+<span class="fc" id="L54">				System.out.print(&quot;\nSelection: &quot;);</span>
+<span class="fc" id="L55">				String choice = s.nextLine();</span>
+<span class="fc" id="L56">				System.out.println(&quot;\nRedirecting...&quot;);</span>
+<span class="fc" id="L57">				choice = choice.toLowerCase().trim();</span>
+<span class="pc bpc" id="L58" title="17 of 22 branches missed.">				switch (choice) {</span>
+				case &quot;1&quot;:
+				case &quot;1.&quot;:
+				case &quot;login&quot;:
+				case &quot;log in&quot;:
+<span class="fc" id="L63">					selected = true;</span>
+<span class="fc" id="L64">					return log.traceExit(false);</span>
+				case &quot;2&quot;:
+				case &quot;2.&quot;:
+				case &quot;register&quot;:
+<span class="fc" id="L68">					selected = true;</span>
+<span class="fc" id="L69">					return log.traceExit(true);</span>
+				default:
+<span class="fc" id="L71">					System.out.println(&quot;\nYour choice could not be recognized.&quot;);</span>
+<span class="fc" id="L72">					System.out.println(&quot;\nPlease enter a number for your selection.&quot;);</span>
+			}
+		}
+<span class="nc" id="L75">		return log.traceExit(false);</span>
+	}
+	
+	public Boolean register(Scanner s) {
+<span class="fc" id="L79">		log.traceEntry();</span>
+<span class="fc" id="L80">		boolean goodName = false;</span>
+<span class="fc" id="L81">		String choice = &quot;&quot;, pass = &quot;&quot;, first = &quot;&quot;, last = &quot;&quot;;</span>
+		
+		// Take input for username
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		while (!goodName ) {</span>
+<span class="fc" id="L85">			System.out.println(&quot;\nUsername must be at least 8 characters.&quot;);</span>
+<span class="fc" id="L86">			System.out.print(&quot;\nPlease enter desired username: &quot;);</span>
+<span class="fc" id="L87">			choice = s.nextLine();</span>
+			try {
+<span class="fc" id="L89">				goodName = validator.userIsUnique(choice);</span>
+<span class="fc" id="L90">			}</span>
+<span class="fc" id="L91">			catch (InvalidUsernameException e) {</span>
+<span class="fc" id="L92">				log.info(&quot;Duplicate username {}&quot;, choice);</span>
+<span class="fc" id="L93">				System.out.println(&quot;\nThat username is not available.&quot;);</span>
+<span class="fc" id="L94">				System.out.println(&quot;\nPlease try again.&quot;);</span>
+			}
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (goodName) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">				if (choice.length() &lt; 8) {</span>
+<span class="fc" id="L98">					System.out.println(&quot;\nUsername is of insufficient length&quot;);</span>
+<span class="fc" id="L99">					goodName = false;</span>
+				}
+			}
+		}
+<span class="fc" id="L103">		System.out.println(&quot;\nThat username is available.&quot;);</span>
+<span class="fc" id="L104">		log.trace(&quot;Username accepted&quot;);</span>
+		
+		// Take input for password
+<span class="fc" id="L107">		boolean goodPass = false;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		while (!goodPass) {</span>
+<span class="fc" id="L109">			System.out.print(&quot;\nPlease enter desired password: &quot;);</span>
+<span class="fc" id="L110">			pass = s.nextLine();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (pass.length() &gt; 0) {</span>
+<span class="fc" id="L112">				goodPass = true;</span>
+<span class="fc" id="L113">				System.out.println(&quot;\nThat password is acceptable\n&quot;);</span>
+<span class="fc" id="L114">			}</span>
+			else {
+<span class="fc" id="L116">				System.out.println(&quot;\nPassword cannot be empty&quot;);</span>
+			}
+		}
+<span class="fc" id="L119">		log.trace(&quot;Password accepted&quot;);</span>
+		
+		// Take input for 
+<span class="fc" id="L122">		boolean goodFirst = false;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		while (!goodFirst) {</span>
+<span class="fc" id="L124">			System.out.print(&quot;Please enter your first name: &quot;);</span>
+<span class="fc" id="L125">			first = s.nextLine();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (first.length() &gt; 0) {</span>
+<span class="fc" id="L127">				goodFirst = true;</span>
+<span class="fc" id="L128">			}</span>
+			else {
+<span class="fc" id="L130">				System.out.println(&quot;First name cannot be empty&quot;);</span>
+			}
+		}
+<span class="fc" id="L133">		log.trace(&quot;First name accepted&quot;);</span>
+		
+<span class="fc" id="L135">		boolean goodLast = false;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		while (!goodLast) {</span>
+<span class="fc" id="L137">			System.out.print(&quot;Please enter your last name: &quot;);</span>
+<span class="fc" id="L138">			last = s.nextLine();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (last.length() &gt; 0) {</span>
+<span class="fc" id="L140">				goodLast = true;</span>
+<span class="fc" id="L141">			}</span>
+			else {
+<span class="fc" id="L143">				System.out.println(&quot;Last name cannot be empty&quot;);</span>
+			}
+		}
+<span class="fc" id="L146">		log.trace(&quot;Last name accepted&quot;);</span>
+		
+<span class="fc" id="L148">		Optional&lt;User&gt; newUser = userService.createUser(first, last, choice, pass);</span>
+<span class="fc" id="L149">		User unpacked = null;</span>
+		try {
+<span class="fc" id="L151">			unpacked = newUser.get();</span>
+<span class="fc" id="L152">			System.out.println(&quot;\nA new user has been created with the following information: &quot;);</span>
+<span class="fc" id="L153">			System.out.println(&quot;First name: &quot; + unpacked.getFirstName());</span>
+<span class="fc" id="L154">			System.out.println(&quot;Last name: &quot; + unpacked.getLastName());</span>
+<span class="fc" id="L155">			System.out.println(&quot;Username: &quot; + unpacked.getUsername());</span>
+<span class="fc" id="L156">			System.out.println(&quot;\nYour user ID is &quot; + unpacked.getUserID());</span>
+<span class="fc" id="L157">			System.out.println(&quot;Please keep this number for your records.&quot;);</span>
+<span class="fc" id="L158">			System.out.println(&quot;\nYou will now be redirected to the login screen.&quot;);</span>
+<span class="fc" id="L159">			log.info(&quot;New user {} created&quot;, unpacked.getUserID());</span>
+<span class="fc" id="L160">		}</span>
+<span class="fc" id="L161">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L162">			log.error(&quot;New user could not be created&quot;);</span>
+<span class="fc" id="L163">			System.out.println(&quot;There was an error processing your request.&quot;);</span>
+<span class="fc" id="L164">			System.out.println(&quot;If you would like to try registering again, please type 'TRY AGAIN'&quot;);</span>
+<span class="fc" id="L165">			System.out.println(&quot;Otherwise, you will be taken to the login screen.&quot;);</span>
+<span class="fc" id="L166">			String response = s.nextLine();</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			if (response.toLowerCase().equals(&quot;try again&quot;)) {</span>
+<span class="nc" id="L168">				return log.traceExit(true);</span>
+			}
+		}
+<span class="fc" id="L171">		return log.traceExit(false);</span>
+		
+	}
+
+	public User retrieveUserInfo(String username) {
+<span class="fc" id="L176">		log.traceEntry(&quot;Username = {}&quot;, username);</span>
+<span class="fc" id="L177">		Optional&lt;User&gt; u = userService.getUserByName(username);</span>
+		try {
+<span class="fc" id="L179">			return log.traceExit(u.get());</span>
+		}
+<span class="fc" id="L181">		catch (NoSuchElementException e) {</span>
+<span class="fc" id="L182">			log.error(&quot;Could not retrieve user info from the database&quot;);</span>
+<span class="fc" id="L183">			System.out.println(&quot;An error occured while trying to retrieve user information.&quot;);</span>
+<span class="fc" id="L184">			return null;</span>
+		}
+	}
+
+	public Integer selectMenuOption(Scanner s) {
+<span class="fc" id="L189">		log.traceEntry(&quot;Entry selection menu&quot;);</span>
+<span class="fc" id="L190">		System.out.println(&quot;Which of the following can we help you with today?&quot;);</span>
+<span class="fc" id="L191">		while (true) {</span>
+<span class="fc" id="L192">			System.out.println(&quot;1. View your accounts&quot;);</span>
+<span class="fc" id="L193">			System.out.println(&quot;2. Create a new account&quot;);</span>
+<span class="fc" id="L194">			System.out.println(&quot;3. Delete an existing account&quot;);</span>
+<span class="fc" id="L195">			System.out.println(&quot;4. Make a transaction&quot;);</span>
+<span class="fc" id="L196">			System.out.println(&quot;5. View your transactions&quot;);</span>
+<span class="fc" id="L197">			System.out.println(&quot;6. Logout&quot;);</span>
+<span class="fc" id="L198">			System.out.print(&quot;\nSelection: &quot;);</span>
+<span class="fc" id="L199">			String choice = s.nextLine().toLowerCase().trim();</span>
+<span class="fc" id="L200">			log.trace(&quot;Menu selection = {}&quot;, choice);</span>
+<span class="pc bpc" id="L201" title="49 of 52 branches missed.">			switch(choice) {</span>
+			case &quot;1&quot;:
+			case &quot;1.&quot;:
+<span class="fc" id="L204">				return log.traceExit(1);</span>
+			case &quot;2&quot;:
+			case &quot;2.&quot;:
+			case &quot;create&quot;:
+<span class="nc" id="L208">				return log.traceExit(2);</span>
+			case &quot;3&quot;:
+			case &quot;3.&quot;:
+			case &quot;delete&quot;:
+<span class="nc" id="L212">				return log.traceExit(3);</span>
+			case &quot;4&quot;:
+			case &quot;4.&quot;:
+			case &quot;make&quot;:
+<span class="nc" id="L216">				return log.traceExit(4);</span>
+			case &quot;5&quot;:
+			case &quot;5.&quot;:
+<span class="nc" id="L219">				return log.traceExit(5);</span>
+			case &quot;6&quot;:
+			case &quot;6.&quot;:
+			case &quot;logout&quot;:
+			case &quot;log out&quot;:
+<span class="nc" id="L224">				return log.traceExit(6);</span>
+			default:
+<span class="fc" id="L226">				System.out.println(&quot;\nYour selection could not be processed.&quot;);</span>
+<span class="fc" id="L227">				System.out.println(&quot;\nPlease select the number of the option you desire.\n&quot;);</span>
+				break;
+			}	
+		}
+	}
+
+	public void viewAccount(Scanner s, User user) {
+<span class="nc" id="L234">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L235">		Optional&lt;List&lt;Account&gt;&gt; accounts = accountService.getUserAccounts(user.getUserID());</span>
+<span class="nc" id="L236">		List&lt;Account&gt; unpacked = null;</span>
+		try {
+<span class="nc" id="L238">			unpacked = accounts.get();</span>
+<span class="nc" id="L239">		}</span>
+<span class="nc" id="L240">		catch (NoSuchElementException e) {</span>
+<span class="nc" id="L241">			log.error(&quot;Error occured while trying to retrieve user info from database&quot;);</span>
+<span class="nc" id="L242">			System.out.println(&quot;\nThere was an error in retrieving account information.&quot;);</span>
+		}
+<span class="nc bnc" id="L244" title="All 2 branches missed.">		if (unpacked != null) {</span>
+<span class="nc" id="L245">			System.out.println(&quot;\nThe following accounts belonging to you were found:\n&quot;);</span>
+<span class="nc" id="L246">			System.out.println(&quot;Account ID\tBalance&quot;);</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">			for (Account a : unpacked) {</span>
+<span class="nc" id="L248">				System.out.println(a.getAccountID() + &quot;\t\t&quot; + a.getBalance());</span>
+			}
+		}
+<span class="nc" id="L251">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L252">		s.nextLine();</span>
+<span class="nc" id="L253">		log.traceExit();</span>
+<span class="nc" id="L254">	}</span>
+	
+	public void viewTransaction(Scanner s, User user) {
+<span class="nc" id="L257">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L258">		Optional&lt;List&lt;Account&gt;&gt; accounts = accountService.getUserAccounts(user.getUserID());</span>
+<span class="nc" id="L259">		List&lt;Account&gt; unpacked = null;</span>
+		try {
+<span class="nc" id="L261">			unpacked = accounts.get();</span>
+<span class="nc" id="L262">		}</span>
+<span class="nc" id="L263">		catch (NoSuchElementException e) {</span>
+<span class="nc" id="L264">			log.error(&quot;Error occured while trying to retrieve user info from database&quot;);</span>
+<span class="nc" id="L265">			System.out.println(&quot;\nThere was an error in retrieving account information.&quot;);</span>
+		}
+<span class="nc" id="L267">		Set&lt;Transaction&gt; allTrans = new HashSet&lt;Transaction&gt;();</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">		if (unpacked != null) {</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">			for (Account a : unpacked) {</span>
+<span class="nc" id="L270">				List&lt;Transaction&gt; trans = transactionService.getAllTransactionsForAccount(a.getAccountID()).get();</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">				for (Transaction t: trans) {</span>
+<span class="nc" id="L272">					allTrans.add(t);</span>
+				}
+			}
+		}
+<span class="nc" id="L276">		List&lt;Transaction&gt; allTransList = new ArrayList&lt;Transaction&gt;(allTrans);</span>
+<span class="nc" id="L277">		allTransList.sort(new TransactionComparator());</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">		if (!allTransList.isEmpty()) {</span>
+			
+<span class="nc" id="L280">			System.out.println(&quot;The following transactions for your accounts were found:\n&quot;);</span>
+<span class="nc" id="L281">			System.out.println(String.format(&quot;%-15s %-15s %-15s %-15s %-15s&quot;,</span>
+<span class="nc" id="L282">					&quot;ID&quot;, &quot;Account 1&quot;, &quot;Account 2&quot;, &quot;Type&quot;, &quot;Time&quot;));</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">			for (Transaction t : allTransList) {</span>
+<span class="nc" id="L284">				System.out.println(String.format(&quot;%-15s %-15s %-15s %-15s %-30s&quot;,</span>
+<span class="nc" id="L285">						t.getTransactionID(), t.getAccountID1(), t.getAccountID2(), t.getTransType(), t.getTransTime()));</span>
+			}
+		}
+<span class="nc" id="L288">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L289">		s.nextLine();</span>
+<span class="nc" id="L290">		log.traceExit();</span>
+<span class="nc" id="L291">	}</span>
+
+	public void createAccount(Scanner s, User user) {
+<span class="nc" id="L294">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L295">		System.out.println(&quot;\nPlease enter your password to confirm that you would like to create a new account.&quot;);</span>
+<span class="nc" id="L296">		System.out.print(&quot;\nPassword: &quot;);</span>
+<span class="nc" id="L297">		String pass = s.nextLine();</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">		if (pass.equals(user.getPassword())) {</span>
+<span class="nc" id="L299">			System.out.println(&quot;\nA new account will be created for you.&quot;);</span>
+<span class="nc" id="L300">			Optional&lt;Integer&gt; newAcc = accountService.addAccount(user.getUserID());</span>
+			try {
+<span class="nc" id="L302">				Integer newID = newAcc.get();</span>
+<span class="nc" id="L303">				System.out.println(&quot;\nThe ID for your new account is &quot; + newID + &quot;.&quot;);</span>
+<span class="nc" id="L304">				System.out.println(&quot;\nPlease keep this number for your records.&quot;);</span>
+<span class="nc" id="L305">				log.info(&quot;New account made with ID {}&quot;, newID);</span>
+<span class="nc" id="L306">			}</span>
+<span class="nc" id="L307">			catch (NoSuchElementException e) {</span>
+<span class="nc" id="L308">				log.error(&quot;Could not insert new account into database&quot;);</span>
+<span class="nc" id="L309">				System.out.println(&quot;\nThere was an error in processing your request.&quot;);</span>
+			}
+<span class="nc" id="L311">		}</span>
+		else {
+<span class="nc" id="L313">			System.out.println(&quot;\nA new account will not be created at this time.&quot;);</span>
+		}
+<span class="nc" id="L315">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L316">		s.nextLine();</span>
+<span class="nc" id="L317">		log.traceExit();</span>
+<span class="nc" id="L318">	}</span>
+
+	public void deleteAccount(Scanner s, User user) {
+<span class="nc" id="L321">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L322">		System.out.println(&quot;\nPlease enter the ID for the account that you would like deleted.&quot;);</span>
+<span class="nc" id="L323">		System.out.print(&quot;Account ID: &quot;);</span>
+<span class="nc" id="L324">		String id = s.nextLine();</span>
+<span class="nc" id="L325">		Integer numId = 0;</span>
+		try {
+<span class="nc" id="L327">			numId = Integer.valueOf(id);</span>
+<span class="nc" id="L328">		}</span>
+<span class="nc" id="L329">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L330">			log.warn(&quot;Non-integer account ID input&quot;);</span>
+<span class="nc" id="L331">			System.out.println(&quot;\nThat is not a valid Account ID.&quot;);</span>
+		}
+<span class="nc bnc" id="L333" title="All 2 branches missed.">		if (numId != 0) {</span>
+<span class="nc" id="L334">			boolean owned = false;</span>
+			try {
+<span class="nc" id="L336">				owned = validator.ownsAccount(numId, user.getUserID());</span>
+<span class="nc" id="L337">			}</span>
+<span class="nc" id="L338">			catch (AccountNotOwnedException e) {</span>
+<span class="nc" id="L339">				log.warn(&quot;Account {} does not belong to User {}&quot;, numId, user.getUserID());</span>
+<span class="nc" id="L340">				System.out.println(&quot;\nNo account owned by you could be found with that ID.&quot;);</span>
+			}
+<span class="nc bnc" id="L342" title="All 2 branches missed.">			if (owned) {</span>
+<span class="nc" id="L343">				boolean empty = false;</span>
+				try {
+<span class="nc" id="L345">					empty = validator.accountIsEmpty(numId);</span>
+<span class="nc" id="L346">				}</span>
+<span class="nc" id="L347">				catch (AccountNotEmptyException e) {</span>
+<span class="nc" id="L348">					log.warn(&quot;Account {} is not empty&quot;, numId);</span>
+<span class="nc" id="L349">					System.out.println(&quot;\nThe specified account is not empty and cannot be deleted.&quot;);</span>
+				}
+<span class="nc bnc" id="L351" title="All 2 branches missed.">				if (empty) {</span>
+<span class="nc" id="L352">					System.out.println(&quot;\nThe specified account has been located successfully.&quot;);</span>
+<span class="nc" id="L353">					System.out.println(&quot;\nPlease re-enter your password to verify account deletion.&quot;);</span>
+<span class="nc" id="L354">					System.out.print(&quot;Password: &quot;);</span>
+<span class="nc" id="L355">					String pass = s.nextLine();</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">					if (pass.equals(user.getPassword())) {</span>
+<span class="nc" id="L357">						System.out.println(&quot;\nThe account &quot; + id + &quot; will be deleted.&quot;);</span>
+<span class="nc" id="L358">						accountService.removeAccount(numId);</span>
+<span class="nc" id="L359">						log.info(&quot;Account {} has been deleted&quot;, numId);</span>
+<span class="nc" id="L360">					}</span>
+					else {
+<span class="nc" id="L362">						System.out.println(&quot;The account will not be deleted at this time.&quot;);</span>
+					}
+				}
+			}
+		}
+<span class="nc" id="L367">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L368">		s.nextLine();	</span>
+<span class="nc" id="L369">		log.traceExit();</span>
+<span class="nc" id="L370">	}</span>
+
+	public void makeTransaction(Scanner s, User user) {
+<span class="nc" id="L373">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L374">		boolean selected = false;</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">		while (!selected) {</span>
+<span class="nc" id="L376">			System.out.println(&quot;\nPlease select one of the following transaction types:&quot;);</span>
+<span class="nc" id="L377">			System.out.println(&quot;1. Deposit&quot;);</span>
+<span class="nc" id="L378">			System.out.println(&quot;2. Withdrawal&quot;);</span>
+<span class="nc" id="L379">			System.out.println(&quot;3. Transfer&quot;);</span>
+<span class="nc" id="L380">			System.out.print(&quot;Selection: &quot;);</span>
+<span class="nc" id="L381">			String choice = s.nextLine().toLowerCase().trim();</span>
+<span class="nc bnc" id="L382" title="All 37 branches missed.">			switch (choice) {</span>
+			case &quot;1&quot;:
+			case &quot;1.&quot;:
+			case &quot;1. deposit&quot;:
+			case &quot;deposit&quot;:
+<span class="nc" id="L387">				selected = true;</span>
+<span class="nc" id="L388">				makeDeposit(s, user);</span>
+<span class="nc" id="L389">				break;</span>
+			case &quot;2&quot;:
+			case &quot;2.&quot;:
+			case &quot;2. withdrawal&quot;:
+			case &quot;withdrawal&quot;:
+<span class="nc" id="L394">				selected = true;</span>
+<span class="nc" id="L395">				makeWithdrawal(s, user);</span>
+<span class="nc" id="L396">				break;</span>
+			case &quot;3&quot;:
+			case &quot;3.&quot;:
+			case &quot;3. transfer&quot;:
+			case &quot;transfer&quot;:
+<span class="nc" id="L401">				selected = true;</span>
+<span class="nc" id="L402">				makeTransfer(s, user);</span>
+<span class="nc" id="L403">				break;</span>
+			default:
+<span class="nc" id="L405">				System.out.println(&quot;\nYour selection could not be resolved.&quot;);</span>
+<span class="nc" id="L406">				System.out.println(&quot;\nPlease use a number to indicate your choice of transaction.\n&quot;);</span>
+				break;
+			}
+		}
+<span class="nc" id="L410">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L411">		s.nextLine();</span>
+<span class="nc" id="L412">		log.traceExit();</span>
+<span class="nc" id="L413">	}</span>
+
+	private void makeTransfer(Scanner s, User user) {
+<span class="nc" id="L416">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L417">		System.out.println(&quot;\nPlease input the account IDs of the accounts you would like to make a transfer between.&quot;);</span>
+<span class="nc" id="L418">		System.out.print(&quot;Account ID 1 (Source): &quot;);</span>
+<span class="nc" id="L419">		String id1 = s.nextLine();</span>
+<span class="nc" id="L420">		System.out.print(&quot;Account ID 2 (Destination): &quot;);</span>
+<span class="nc" id="L421">		String id2 = s.nextLine();</span>
+<span class="nc" id="L422">		Integer numId1 = 0;</span>
+<span class="nc" id="L423">		Integer numId2 = 0;</span>
+<span class="nc" id="L424">		Integer transId = 0;</span>
+		try {
+<span class="nc" id="L426">			numId1 = Integer.valueOf(id1);</span>
+<span class="nc" id="L427">			numId2 = Integer.valueOf(id2);</span>
+<span class="nc" id="L428">		}</span>
+<span class="nc" id="L429">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L430">			log.warn(&quot;Some account ID not valid&quot;);</span>
+<span class="nc" id="L431">			System.out.println(&quot;\nOne of the IDs specified is not a valid ID.&quot;);</span>
+		}
+<span class="nc bnc" id="L433" title="All 4 branches missed.">		if (numId1 != 0 &amp;&amp; numId2 != 0) {</span>
+<span class="nc" id="L434">			boolean owned1 = false;</span>
+<span class="nc" id="L435">			boolean owned2 = false;</span>
+			try {
+<span class="nc" id="L437">				owned1 = validator.ownsAccount(numId1, user.getUserID());</span>
+<span class="nc" id="L438">				owned2 = validator.ownsAccount(numId1, user.getUserID());</span>
+<span class="nc" id="L439">			}</span>
+<span class="nc" id="L440">			catch (AccountNotOwnedException e) {</span>
+<span class="nc" id="L441">				log.warn(&quot;Some account ID not owned by user {}&quot;, user.getUserID());</span>
+<span class="nc" id="L442">				System.out.println(&quot;\nNo account owned by you could be found for one of the IDs entered.&quot;);</span>
+			}
+<span class="nc bnc" id="L444" title="All 2 branches missed.">			if (owned1 &amp; owned2) {</span>
+<span class="nc" id="L445">				System.out.println(&quot;\nPlease enter the amount you would like to transfer.&quot;);</span>
+<span class="nc" id="L446">				System.out.print(&quot;Amount: &quot;);</span>
+<span class="nc" id="L447">				String amount = s.nextLine();</span>
+<span class="nc" id="L448">				Double numAmount = 0.0;</span>
+				try {
+<span class="nc" id="L450">					numAmount = Double.valueOf(amount);</span>
+<span class="nc" id="L451">				}</span>
+<span class="nc" id="L452">				catch (NumberFormatException e) {</span>
+<span class="nc" id="L453">					log.warn(&quot;Invalid transaction amount&quot;);</span>
+<span class="nc" id="L454">					System.out.println(&quot;\nThat is not a valid amount.&quot;);</span>
+				}
+<span class="nc" id="L456">				boolean sufficient = false;</span>
+				try {
+<span class="nc" id="L458">					sufficient = validator.balanceIsSufficient(numId1, numAmount);</span>
+<span class="nc" id="L459">				}</span>
+<span class="nc" id="L460">				catch (InsufficientBalanceException e) {</span>
+<span class="nc" id="L461">					log.warn(&quot;Insufficient balance for transaction&quot;);</span>
+<span class="nc" id="L462">					System.out.println(&quot;\nThe source account does not contain sufficient funds for this withdrawal.&quot;);</span>
+				}
+<span class="nc bnc" id="L464" title="All 4 branches missed.">				if (numAmount &gt; 0 &amp;&amp; sufficient) {</span>
+<span class="nc" id="L465">					Optional&lt;Integer&gt; returnId = transactionService.issueTransfer(numId1, numId2, numAmount);</span>
+					try {
+<span class="nc" id="L467">						transId = returnId.get();</span>
+<span class="nc" id="L468">					}</span>
+<span class="nc" id="L469">					catch (NoSuchElementException e) {</span>
+<span class="nc" id="L470">						log.error(&quot;Error occurred while trying to extract transaction info from database&quot;);</span>
+<span class="nc" id="L471">						System.out.println(&quot;\nThere was an error in processing this transaction.&quot;);</span>
+					}
+				}
+			}
+		}
+<span class="nc bnc" id="L476" title="All 2 branches missed.">		if (transId == 0) {</span>
+<span class="nc" id="L477">			System.out.println(&quot;\nThe transaction will be canceled.&quot;);</span>
+<span class="nc" id="L478">			log.traceExit(&quot;Transaction canceled&quot;);</span>
+<span class="nc" id="L479">		}</span>
+		else {
+<span class="nc" id="L481">			System.out.println(&quot;\nTransaction successful.&quot;);</span>
+<span class="nc" id="L482">			System.out.println(&quot;\nThe ID for this transaction is &quot; + transId + &quot;.&quot;);</span>
+<span class="nc" id="L483">			System.out.println(&quot;\nPlease keep this number for your records.&quot;);</span>
+<span class="nc" id="L484">			log.traceExit(&quot;Successful transaction {}&quot;, transId);</span>
+		}
+		
+<span class="nc" id="L487">	}</span>
+
+	private void makeWithdrawal(Scanner s, User user) {
+<span class="nc" id="L490">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L491">		System.out.println(&quot;\nPlease input the account ID of the account you would like to make a withdrawal from.&quot;);</span>
+<span class="nc" id="L492">		System.out.print(&quot;Account ID: &quot;);</span>
+<span class="nc" id="L493">		String id = s.nextLine();</span>
+<span class="nc" id="L494">		Integer numId = 0;</span>
+<span class="nc" id="L495">		Integer transId = 0;</span>
+		try {
+<span class="nc" id="L497">			numId = Integer.valueOf(id);</span>
+<span class="nc" id="L498">		}</span>
+<span class="nc" id="L499">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L500">			log.warn(&quot;Invalid account ID entered&quot;);</span>
+<span class="nc" id="L501">			System.out.println(&quot;\nThat is not a valid Account ID.&quot;);</span>
+		}
+<span class="nc bnc" id="L503" title="All 2 branches missed.">		if (numId != 0) {</span>
+<span class="nc" id="L504">			boolean owned = false;</span>
+			try {
+<span class="nc" id="L506">				owned = validator.ownsAccount(numId, user.getUserID());</span>
+<span class="nc" id="L507">			}</span>
+<span class="nc" id="L508">			catch (AccountNotOwnedException e) {</span>
+<span class="nc" id="L509">				log.warn(&quot;Account {} not owned by user {}&quot;, numId, user.getUserID());</span>
+<span class="nc" id="L510">				System.out.println(&quot;\nNo account owned by you could be found with that ID.&quot;);</span>
+			}
+<span class="nc bnc" id="L512" title="All 2 branches missed.">			if (owned) {</span>
+<span class="nc" id="L513">				System.out.println(&quot;\nPlease enter the amount you would like to withdraw.&quot;);</span>
+<span class="nc" id="L514">				System.out.print(&quot;Amount: &quot;);</span>
+<span class="nc" id="L515">				String amount = s.nextLine();</span>
+<span class="nc" id="L516">				Double numAmount = 0.0;</span>
+				try {
+<span class="nc" id="L518">					numAmount = Double.valueOf(amount);</span>
+<span class="nc" id="L519">				}</span>
+<span class="nc" id="L520">				catch (NumberFormatException e) {</span>
+<span class="nc" id="L521">					log.warn(&quot;Invalid amount entered&quot;);</span>
+<span class="nc" id="L522">					System.out.println(&quot;\nThat is not a valid amount.&quot;);</span>
+				}
+<span class="nc" id="L524">				boolean sufficient = false;</span>
+				try {
+<span class="nc" id="L526">					sufficient = validator.balanceIsSufficient(numId, numAmount);</span>
+<span class="nc" id="L527">				}</span>
+<span class="nc" id="L528">				catch (InsufficientBalanceException e) {</span>
+<span class="nc" id="L529">					log.warn(&quot;Account reports insufficient balance&quot;);</span>
+<span class="nc" id="L530">					System.out.println(&quot;\nThat account does not contain sufficient funds for this withdrawal.&quot;);</span>
+				}
+<span class="nc bnc" id="L532" title="All 4 branches missed.">				if (numAmount &gt; 0 &amp;&amp; sufficient) {</span>
+<span class="nc" id="L533">					Optional&lt;Integer&gt; returnId = transactionService.makeWithdrawal(numId, numAmount);</span>
+					try {
+<span class="nc" id="L535">						transId = returnId.get();</span>
+<span class="nc" id="L536">					}</span>
+<span class="nc" id="L537">					catch (NoSuchElementException e) {</span>
+<span class="nc" id="L538">						log.error(&quot;Error occurred while trying to retrieve transaction info from database&quot;);</span>
+<span class="nc" id="L539">						System.out.println(&quot;\nThere was an error in processing this transaction.&quot;);</span>
+					}
+				}
+			}
+		}
+<span class="nc bnc" id="L544" title="All 2 branches missed.">		if (transId == 0) {</span>
+<span class="nc" id="L545">			System.out.println(&quot;\nThe transaction will be canceled.&quot;);</span>
+<span class="nc" id="L546">			log.traceExit(&quot;Transaction canceled&quot;);</span>
+<span class="nc" id="L547">		}</span>
+		else {
+<span class="nc" id="L549">			System.out.println(&quot;\nTransaction successful.&quot;);</span>
+<span class="nc" id="L550">			System.out.println(&quot;\nThe ID for this transaction is &quot; + transId + &quot;.&quot;);</span>
+<span class="nc" id="L551">			System.out.println(&quot;\nPlease keep this number for your records.&quot;);</span>
+<span class="nc" id="L552">			log.traceExit(&quot;Successful transaction {}&quot;, transId);</span>
+		}
+<span class="nc" id="L554">	}</span>
+
+	private void makeDeposit(Scanner s, User user) {
+<span class="nc" id="L557">		log.traceEntry(&quot;User = {}&quot;, user.getUserID());</span>
+<span class="nc" id="L558">		System.out.println(&quot;\nPlease input the account ID of the account you would like to make a deposit for.&quot;);</span>
+<span class="nc" id="L559">		System.out.print(&quot;Account ID: &quot;);</span>
+<span class="nc" id="L560">		String id = s.nextLine();</span>
+<span class="nc" id="L561">		Integer numId = 0;</span>
+<span class="nc" id="L562">		Integer transId = 0;</span>
+		try {
+<span class="nc" id="L564">			numId = Integer.valueOf(id);</span>
+<span class="nc" id="L565">		}</span>
+<span class="nc" id="L566">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L567">			log.warn(&quot;Invalid account ID entered&quot;);</span>
+<span class="nc" id="L568">			System.out.println(&quot;\nThat is not a valid Account ID.&quot;);</span>
+		}
+<span class="nc bnc" id="L570" title="All 2 branches missed.">		if (numId != 0) {</span>
+<span class="nc" id="L571">			boolean owned = false;</span>
+			try {
+<span class="nc" id="L573">				owned = validator.ownsAccount(numId, user.getUserID());</span>
+<span class="nc" id="L574">			}</span>
+<span class="nc" id="L575">			catch (AccountNotOwnedException e) {</span>
+<span class="nc" id="L576">				log.warn(&quot;Account {} not owned by user {}&quot;, numId, user.getUserID());</span>
+<span class="nc" id="L577">				System.out.println(&quot;\nNo account owned by you could be found with that ID.&quot;);</span>
+			}
+<span class="nc bnc" id="L579" title="All 2 branches missed.">			if (owned) {</span>
+<span class="nc" id="L580">				System.out.println(&quot;\nPlease enter the amount you would like to deposit.&quot;);</span>
+<span class="nc" id="L581">				System.out.print(&quot;Amount: &quot;);</span>
+<span class="nc" id="L582">				String amount = s.nextLine();</span>
+<span class="nc" id="L583">				Double numAmount = 0.0;</span>
+				try {
+<span class="nc" id="L585">					numAmount = Double.valueOf(amount);</span>
+<span class="nc" id="L586">				}</span>
+<span class="nc" id="L587">				catch (NumberFormatException e) {</span>
+<span class="nc" id="L588">					log.warn(&quot;Invalid amount for transaction entered&quot;);</span>
+<span class="nc" id="L589">					System.out.println(&quot;\nThat is not a valid amount.&quot;);</span>
+				}
+<span class="nc bnc" id="L591" title="All 2 branches missed.">				if (numAmount &gt; 0) {</span>
+<span class="nc" id="L592">					Optional&lt;Integer&gt; returnId = transactionService.makeDeposit(numId, numAmount);</span>
+					try {
+<span class="nc" id="L594">						transId = returnId.get();</span>
+<span class="nc" id="L595">					}</span>
+<span class="nc" id="L596">					catch (NoSuchElementException e) {</span>
+<span class="nc" id="L597">						log.error(&quot;Error in trying to retrieve transaction info from database&quot;);</span>
+<span class="nc" id="L598">						System.out.println(&quot;\nThere was an error in processing this transaction.&quot;);</span>
+					}
+				}
+			}
+		}
+<span class="nc bnc" id="L603" title="All 2 branches missed.">		if (transId == 0) {</span>
+<span class="nc" id="L604">			System.out.println(&quot;\nThe transaction will be canceled.&quot;);</span>
+<span class="nc" id="L605">			log.traceExit(&quot;Transaction canceled&quot;);</span>
+<span class="nc" id="L606">		}</span>
+		else {
+<span class="nc" id="L608">			System.out.println(&quot;\nTransaction successful.&quot;);</span>
+<span class="nc" id="L609">			System.out.println(&quot;\nThe ID for this transaction is &quot; + transId + &quot;.&quot;);</span>
+<span class="nc" id="L610">			System.out.println(&quot;\nPlease keep this number for your records&quot;);</span>
+<span class="nc" id="L611">			log.traceExit(&quot;Successful transaction {}&quot;, transId);</span>
+		}
+<span class="nc" id="L613">	}</span>
+
+	public String getUsername(Scanner s) {
+<span class="fc" id="L616">		log.traceEntry();</span>
+<span class="fc" id="L617">		System.out.print(&quot;\nPlease enter username: &quot;);</span>
+<span class="fc" id="L618">		return log.traceExit(s.nextLine());</span>
+	}
+
+	public String getPassword(Scanner s) {
+<span class="fc" id="L622">		System.out.print(&quot;Please enter password: &quot;);</span>
+<span class="fc" id="L623">		return log.traceExit(s.nextLine());</span>
+	}
+}
+
+
+<span class="nc" id="L628">class TransactionComparator implements Comparator&lt;Transaction&gt; {</span>
+
+	@Override
+	public int compare(Transaction t1, Transaction t2) {
+<span class="nc" id="L632">		return t1.getTransactionID() - (t2.getTransactionID());</span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

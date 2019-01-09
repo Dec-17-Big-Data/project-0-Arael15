@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SuperInteractor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankingApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.bank.util</a> &gt; <span class="el_source">SuperInteractor.java</span></div><h1>SuperInteractor.java</h1><pre class="source lang-java linenums">package com.revature.bank.util;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Scanner;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.revature.bank.exceptions.InvalidUsernameException;
+import com.revature.bank.exceptions.UserNotFoundException;
+import com.revature.bank.model.Account;
+import com.revature.bank.model.User;
+import com.revature.bank.services.AccountService;
+import com.revature.bank.services.UserService;
+import com.revature.bank.services.ValidationService;
+
+public class SuperInteractor {
+
+	private static SuperInteractor superInteractor;
+<span class="nc" id="L26">	private static final Logger log = LogManager.getLogger(SuperInteractor.class);</span>
+<span class="nc" id="L27">	private UserService userService = UserService.getUserService();</span>
+<span class="nc" id="L28">	private AccountService accountService = AccountService.getAccountService();</span>
+<span class="nc" id="L29">	private ValidationService validator = ValidationService.getValidationService();</span>
+	private String superPassword;
+	
+<span class="nc" id="L32">	private SuperInteractor() {</span>
+<span class="nc" id="L33">		Properties props = new Properties();</span>
+		try {
+<span class="nc" id="L35">			InputStream in = new FileInputStream(&quot;src\\main\\resources\\admin.properties&quot;);</span>
+<span class="nc" id="L36">			props.load(in);</span>
+<span class="nc" id="L37">			superPassword = props.getProperty(&quot;password&quot;);</span>
+<span class="nc" id="L38">		}</span>
+<span class="nc" id="L39">		catch (IOException e) {log.traceExit(false);</span>
+		}
+		
+		
+<span class="nc" id="L43">	}</span>
+	
+	public static SuperInteractor getSuperInteractor() {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">		if (superInteractor == null) {</span>
+<span class="nc" id="L47">			superInteractor = new SuperInteractor();</span>
+		}
+<span class="nc" id="L49">		return superInteractor;</span>
+	}
+
+	public Integer selectMenuOption(Scanner s) {
+<span class="nc" id="L53">		log.traceEntry(&quot;Entry selection menu&quot;);</span>
+<span class="nc" id="L54">		System.out.println(&quot;\nWhich of the following can we help you with today?&quot;);</span>
+<span class="nc" id="L55">		while (true) {</span>
+<span class="nc" id="L56">			System.out.println(&quot;1. View all users&quot;);</span>
+<span class="nc" id="L57">			System.out.println(&quot;2. View accounts belonging to a particular user&quot;);</span>
+<span class="nc" id="L58">			System.out.println(&quot;3. Update a user's information&quot;);</span>
+<span class="nc" id="L59">			System.out.println(&quot;4. Create a new user&quot;);</span>
+<span class="nc" id="L60">			System.out.println(&quot;5. Create a new account for a user&quot;);</span>
+<span class="nc" id="L61">			System.out.println(&quot;6. Delete a user&quot;);</span>
+<span class="nc" id="L62">			System.out.println(&quot;7. Delete all users&quot;);</span>
+<span class="nc" id="L63">			System.out.println(&quot;8. Logout&quot;);</span>
+<span class="nc" id="L64">			System.out.print(&quot;\nSelection: &quot;);</span>
+<span class="nc" id="L65">			String choice = s.nextLine().toLowerCase().trim();</span>
+<span class="nc" id="L66">			log.trace(&quot;Menu selection = {}&quot;, choice);</span>
+<span class="nc bnc" id="L67" title="All 52 branches missed.">			switch(choice) {</span>
+			case &quot;1&quot;:
+			case &quot;1.&quot;:
+<span class="nc" id="L70">				return log.traceExit(1);</span>
+			case &quot;2&quot;:
+			case &quot;2.&quot;:
+<span class="nc" id="L73">				return log.traceExit(2);</span>
+			case &quot;3&quot;:
+			case &quot;3.&quot;:
+			case &quot;update&quot;:
+<span class="nc" id="L77">				return log.traceExit(3);</span>
+			case &quot;4&quot;:
+			case &quot;4.&quot;:
+<span class="nc" id="L80">				return log.traceExit(4);</span>
+			case &quot;5&quot;:
+			case &quot;5.&quot;:
+<span class="nc" id="L83">				return log.traceExit(5);</span>
+			case &quot;6&quot;:
+			case &quot;6.&quot;:
+<span class="nc" id="L86">				return log.traceExit(6);</span>
+			case &quot;7&quot;:
+			case &quot;7.&quot;:
+<span class="nc" id="L89">				return log.traceExit(7);</span>
+			case &quot;8&quot;:
+			case &quot;8.&quot;:
+<span class="nc" id="L92">				return log.traceExit(8);</span>
+			default:
+<span class="nc" id="L94">				System.out.println(&quot;\nYour selection could not be processed.&quot;);</span>
+<span class="nc" id="L95">				System.out.println(&quot;\nPlease select the number of the option you desire.\n&quot;);</span>
+				break;
+			}	
+		}
+	}
+
+	public void viewUser(Scanner s) {
+<span class="nc" id="L102">		log.traceEntry();</span>
+<span class="nc" id="L103">		Optional&lt;List&lt;User&gt;&gt; allUsers = userService.getAllUsers();</span>
+<span class="nc" id="L104">		List&lt;User&gt; allUsersList = null;</span>
+		try {
+<span class="nc" id="L106">			allUsersList = allUsers.get();</span>
+<span class="nc" id="L107">		}</span>
+<span class="nc" id="L108">		catch (NoSuchElementException e) {</span>
+<span class="nc" id="L109">			log.error(&quot;Encountered error while retrieving users from database&quot;);</span>
+<span class="nc" id="L110">			System.out.println(&quot;\nCould not retrieve user data from database.&quot;);</span>
+		}
+<span class="nc bnc" id="L112" title="All 2 branches missed.">		if (allUsersList != null) {</span>
+<span class="nc" id="L113">			System.out.println(&quot;\nThe following users are on record:&quot;);</span>
+<span class="nc" id="L114">			System.out.println(String.format(&quot;%-10s %-20s %-20s %-20s %-20s&quot;,</span>
+<span class="nc" id="L115">					&quot;User ID&quot;, &quot;Username&quot;, &quot;Password&quot;, &quot;First Name&quot;, &quot;Last Name&quot;));</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">			for (User u : allUsersList) {</span>
+<span class="nc" id="L117">				System.out.println(String.format(&quot;%-10s %-20s %-20s %-20s %-20s&quot;,</span>
+<span class="nc" id="L118">						u.getUserID(), u.getUsername(), u.getPassword(), u.getFirstName(), u.getLastName()));</span>
+			}
+		}
+<span class="nc" id="L121">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L122">		s.nextLine();</span>
+<span class="nc" id="L123">		log.traceExit();</span>
+<span class="nc" id="L124">	}</span>
+
+	public void viewAccount(Scanner s) {
+<span class="nc" id="L127">		log.traceEntry();</span>
+<span class="nc" id="L128">		System.out.println(&quot;\nPlease enter the ID of the user whose accounts you would like to view.&quot;);</span>
+<span class="nc" id="L129">		System.out.print(&quot;User ID: &quot;);</span>
+<span class="nc" id="L130">		String inputID = s.nextLine();</span>
+<span class="nc" id="L131">		Integer numId = 0;</span>
+		try {
+<span class="nc" id="L133">			numId = Integer.valueOf(inputID);</span>
+<span class="nc" id="L134">		}</span>
+<span class="nc" id="L135">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L136">			log.warn(&quot;Invalid user ID entered&quot;);</span>
+<span class="nc" id="L137">			System.out.println(&quot;\nThat is not a valid User ID.&quot;);</span>
+		}
+<span class="nc bnc" id="L139" title="All 2 branches missed.">		if (numId != 0) {</span>
+<span class="nc" id="L140">			Optional&lt;List&lt;Account&gt;&gt; userAccounts = accountService.getUserAccounts(numId);</span>
+<span class="nc" id="L141">			List&lt;Account&gt; userAccountsList = null;</span>
+			try {
+<span class="nc" id="L143">				userAccountsList = userAccounts.get();</span>
+<span class="nc" id="L144">			}</span>
+<span class="nc" id="L145">			catch (NoSuchElementException e) {</span>
+<span class="nc" id="L146">				log.error(&quot;Error occurred while trying to retrieve account info from database&quot;);</span>
+<span class="nc" id="L147">				System.out.println(&quot;\nCould not retrieve account info from database&quot;);</span>
+			}
+<span class="nc bnc" id="L149" title="All 2 branches missed.">			if (userAccountsList != null) {</span>
+<span class="nc" id="L150">				System.out.println(&quot;\nThe following accounts were found belonging to the specified user:&quot;);</span>
+<span class="nc" id="L151">				System.out.println(String.format(&quot;\n%-15s %-15s&quot;, &quot;Account ID&quot;, &quot;Balance&quot;));</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">				for (Account a : userAccountsList) {</span>
+<span class="nc" id="L153">					System.out.println(String.format(&quot;%-15s %-15s&quot;, a.getAccountID(), a.getBalance()));</span>
+				}
+			}
+		}
+<span class="nc" id="L157">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L158">		s.nextLine();</span>
+<span class="nc" id="L159">		log.traceExit();</span>
+<span class="nc" id="L160">	}</span>
+
+	public void updateInfo(Scanner s) {
+<span class="nc" id="L163">		log.traceEntry();</span>
+<span class="nc" id="L164">		System.out.println(&quot;\nPlease enter the ID of the user whose information you would like to update.&quot;);</span>
+<span class="nc" id="L165">		System.out.print(&quot;User ID: &quot;);</span>
+<span class="nc" id="L166">		String inputID = s.nextLine();</span>
+<span class="nc" id="L167">		Integer numId = 0;</span>
+		try {
+<span class="nc" id="L169">			numId = Integer.valueOf(inputID);</span>
+<span class="nc" id="L170">		}</span>
+<span class="nc" id="L171">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L172">			log.warn(&quot;Invalid user ID entered&quot;);</span>
+<span class="nc" id="L173">			System.out.println(&quot;\nThat is not a valid User ID.&quot;);</span>
+		}
+		try {
+<span class="nc" id="L176">			boolean exists = validator.userExists(numId);</span>
+<span class="nc" id="L177">		}</span>
+<span class="nc" id="L178">		catch (UserNotFoundException e) {</span>
+<span class="nc" id="L179">			log.warn(&quot;User ID does not match value in table&quot;);</span>
+<span class="nc" id="L180">			System.out.println(&quot;\nThere is no user belonging to that ID.&quot;);</span>
+<span class="nc" id="L181">			numId = 0;</span>
+		}
+<span class="nc bnc" id="L183" title="All 2 branches missed.">		if (numId != 0) {</span>
+<span class="nc" id="L184">			boolean chosen = false;</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">			while (!chosen) {</span>
+<span class="nc" id="L186">				System.out.println(&quot;\nPlease select the field you would like to modify:&quot;);</span>
+<span class="nc" id="L187">				System.out.println(&quot;1. First name&quot;);</span>
+<span class="nc" id="L188">				System.out.println(&quot;2. Last name&quot;);</span>
+<span class="nc" id="L189">				System.out.println(&quot;3. Username&quot;);</span>
+<span class="nc" id="L190">				System.out.println(&quot;4. Password&quot;);</span>
+<span class="nc" id="L191">				System.out.println(&quot;5. Cancel&quot;);</span>
+<span class="nc" id="L192">				System.out.print(&quot;Selection: &quot;);</span>
+<span class="nc" id="L193">				String choice = s.nextLine().toLowerCase().trim();</span>
+<span class="nc bnc" id="L194" title="All 67 branches missed.">				switch (choice) {</span>
+				case &quot;1&quot;:
+				case &quot;1.&quot;:
+				case &quot;first&quot;:
+				case &quot;first name&quot;:
+				case &quot;1. first name&quot;:
+<span class="nc" id="L200">					chosen = true;</span>
+<span class="nc" id="L201">					System.out.println(&quot;\nPlease enter the new value for this field:&quot;);</span>
+<span class="nc" id="L202">					System.out.print(&quot;First name: &quot;);</span>
+<span class="nc" id="L203">					String input1 = s.nextLine();</span>
+					try {
+<span class="nc" id="L205">						Optional&lt;Boolean&gt; done = userService.updateUser(numId, input1, &quot;firstName&quot;);</span>
+<span class="nc" id="L206">						done.get();</span>
+<span class="nc" id="L207">						System.out.println(&quot;\nUser field successfully updated.&quot;);</span>
+<span class="nc" id="L208">					}</span>
+<span class="nc" id="L209">					catch (NoSuchElementException e) {</span>
+<span class="nc" id="L210">						System.out.println(&quot;\nAn error occurred while attempting to update user info&quot;);</span>
+<span class="nc" id="L211">						System.out.println(&quot;\nNo changes will be made to the user at this time.&quot;);</span>
+<span class="nc" id="L212">						log.error(&quot;Error while updating user in database&quot;);</span>
+					}
+<span class="nc" id="L214">					break;</span>
+				case &quot;2&quot;:
+				case &quot;2.&quot;:
+				case &quot;last&quot;:
+				case &quot;last name&quot;:
+				case &quot;2. last name&quot;:
+<span class="nc" id="L220">					chosen = true;</span>
+<span class="nc" id="L221">					System.out.println(&quot;\nPlease enter the new value for this field:&quot;);</span>
+<span class="nc" id="L222">					System.out.print(&quot;Last name: &quot;);</span>
+<span class="nc" id="L223">					String input2 = s.nextLine();</span>
+					try {
+<span class="nc" id="L225">						Optional&lt;Boolean&gt; done = userService.updateUser(numId, input2, &quot;lastName&quot;);</span>
+<span class="nc" id="L226">						done.get();</span>
+<span class="nc" id="L227">						System.out.println(&quot;\nUser field successfully updated.&quot;);</span>
+<span class="nc" id="L228">					}</span>
+<span class="nc" id="L229">					catch (NoSuchElementException e) {</span>
+<span class="nc" id="L230">						System.out.println(&quot;\nAn error occurred while attempting to update user info&quot;);</span>
+<span class="nc" id="L231">						System.out.println(&quot;\nNo changes will be made to the user at this time.&quot;);</span>
+<span class="nc" id="L232">						log.error(&quot;Error while updating user in database&quot;);</span>
+					}
+<span class="nc" id="L234">					break;</span>
+				case &quot;3&quot;:
+				case &quot;3.&quot;:
+				case &quot;username&quot;:
+				case &quot;3. username&quot;:
+<span class="nc" id="L239">					chosen = true;</span>
+<span class="nc" id="L240">					System.out.println(&quot;\nPlease enter the new value for this field:&quot;);</span>
+<span class="nc" id="L241">					System.out.print(&quot;Username: &quot;);</span>
+<span class="nc" id="L242">					String input3 = s.nextLine();</span>
+					try {
+<span class="nc" id="L244">						Optional&lt;Boolean&gt; done = userService.updateUser(numId, input3, &quot;userame&quot;);</span>
+<span class="nc" id="L245">						done.get();</span>
+<span class="nc" id="L246">						System.out.println(&quot;\nUser field successfully updated.&quot;);</span>
+<span class="nc" id="L247">					}</span>
+<span class="nc" id="L248">					catch (NoSuchElementException e) {</span>
+<span class="nc" id="L249">						System.out.println(&quot;\nAn error occurred while attempting to update user info&quot;);</span>
+<span class="nc" id="L250">						System.out.println(&quot;\nNo changes will be made to the user at this time.&quot;);</span>
+<span class="nc" id="L251">						log.error(&quot;Error while updating user in database&quot;);</span>
+					}
+<span class="nc" id="L253">					break;</span>
+				case &quot;4&quot;:
+				case &quot;4.&quot;:
+				case &quot;password&quot;:
+				case &quot;4. password&quot;:
+<span class="nc" id="L258">					chosen = true;</span>
+<span class="nc" id="L259">					System.out.println(&quot;\nPlease enter the new value for this field:&quot;);</span>
+<span class="nc" id="L260">					System.out.print(&quot;Password: &quot;);</span>
+<span class="nc" id="L261">					String input4 = s.nextLine();</span>
+					try {
+<span class="nc" id="L263">						Optional&lt;Boolean&gt; done = userService.updateUser(numId, input4, &quot;password&quot;);</span>
+<span class="nc" id="L264">						done.get();</span>
+<span class="nc" id="L265">						System.out.println(&quot;\nUser field successfully updated.&quot;);</span>
+<span class="nc" id="L266">					}</span>
+<span class="nc" id="L267">					catch (NoSuchElementException e) {</span>
+<span class="nc" id="L268">						System.out.println(&quot;\nAn error occurred while attempting to update user info&quot;);</span>
+<span class="nc" id="L269">						System.out.println(&quot;\nNo changes will be made to the user at this time.&quot;);</span>
+<span class="nc" id="L270">						log.error(&quot;Error while updating user in database&quot;);</span>
+					}
+<span class="nc" id="L272">					break;</span>
+				case &quot;5&quot;:
+				case &quot;5.&quot;:
+				case &quot;cancel&quot;:
+				case &quot;5. first name&quot;:
+<span class="nc" id="L277">					chosen = true;</span>
+<span class="nc" id="L278">					break;</span>
+				default:
+<span class="nc" id="L280">					System.out.println(&quot;\nYour selection could not be processed.&quot;);</span>
+<span class="nc" id="L281">					System.out.println(&quot;\nPlease select the number of the option you desire.\n&quot;);</span>
+					break;
+				}
+			}
+		}
+<span class="nc" id="L286">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L287">		s.nextLine();</span>
+<span class="nc" id="L288">		log.traceExit();</span>
+<span class="nc" id="L289">	}</span>
+
+	public void createNewAccount(Scanner s) {
+<span class="nc" id="L292">		log.traceEntry();</span>
+<span class="nc" id="L293">		System.out.println(&quot;\nPlease enter the ID of the user who you want to create a new account for.&quot;);</span>
+<span class="nc" id="L294">		System.out.print(&quot;User ID: &quot;);</span>
+<span class="nc" id="L295">		String inputID = s.nextLine();</span>
+<span class="nc" id="L296">		Integer numId = 0;</span>
+		try {
+<span class="nc" id="L298">			numId = Integer.valueOf(inputID);</span>
+<span class="nc" id="L299">		}</span>
+<span class="nc" id="L300">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L301">			log.warn(&quot;Invalid user ID entered&quot;);</span>
+<span class="nc" id="L302">			System.out.println(&quot;\nThat is not a valid User ID.&quot;);</span>
+		}
+<span class="nc bnc" id="L304" title="All 2 branches missed.">		if (numId != 0) {</span>
+<span class="nc" id="L305">			Optional&lt;Integer&gt; newAccount = accountService.addAccount(numId);</span>
+<span class="nc" id="L306">			Integer accountID = 0;</span>
+			try {
+<span class="nc" id="L308">				accountID = newAccount.get();</span>
+<span class="nc" id="L309">			}</span>
+<span class="nc" id="L310">			catch (NoSuchElementException e) {</span>
+<span class="nc" id="L311">				log.error(&quot;Error during retrieval of new account&quot;);</span>
+<span class="nc" id="L312">				System.out.println(&quot;\nAn error occurred while creating a new account&quot;);</span>
+			}
+<span class="nc bnc" id="L314" title="All 2 branches missed.">			if (accountID &gt; 0) {</span>
+<span class="nc" id="L315">				System.out.println(&quot;\nA new account with ID &quot; + accountID + &quot; has been created.&quot;);</span>
+			}
+		}
+<span class="nc" id="L318">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L319">		s.nextLine();</span>
+<span class="nc" id="L320">		log.traceExit();</span>
+<span class="nc" id="L321">	}</span>
+
+	public void createNewUser(Scanner s) {
+<span class="nc" id="L324">		log.traceEntry();</span>
+<span class="nc" id="L325">		boolean goodName = false;</span>
+<span class="nc" id="L326">		String choice = &quot;&quot;, pass = &quot;&quot;, first = &quot;&quot;, last = &quot;&quot;;</span>
+		
+		// Take input for username
+<span class="nc bnc" id="L329" title="All 2 branches missed.">		while (!goodName ) {</span>
+<span class="nc" id="L330">			System.out.println(&quot;\nUsername must be at least 8 characters.&quot;);</span>
+<span class="nc" id="L331">			System.out.print(&quot;\nPlease enter desired username: &quot;);</span>
+<span class="nc" id="L332">			choice = s.nextLine();</span>
+			try {
+<span class="nc" id="L334">				goodName = validator.userIsUnique(choice);</span>
+<span class="nc" id="L335">			}</span>
+<span class="nc" id="L336">			catch (InvalidUsernameException e) {</span>
+<span class="nc" id="L337">				log.info(&quot;Duplicate username {}&quot;, choice);</span>
+<span class="nc" id="L338">				System.out.println(&quot;\nThat username is not available.&quot;);</span>
+<span class="nc" id="L339">				System.out.println(&quot;\nPlease try again.&quot;);</span>
+			}
+<span class="nc bnc" id="L341" title="All 2 branches missed.">			if (goodName) {</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">				if (choice.length() &lt; 8) {</span>
+<span class="nc" id="L343">					System.out.println(&quot;\nUsername is of insufficient length&quot;);</span>
+<span class="nc" id="L344">					goodName = false;</span>
+				}
+			}
+		}
+<span class="nc" id="L348">		System.out.println(&quot;\nThat username is available.&quot;);</span>
+<span class="nc" id="L349">		log.trace(&quot;Username accepted&quot;);</span>
+		
+		// Take input for password
+<span class="nc" id="L352">		boolean goodPass = false;</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">		while (!goodPass) {</span>
+<span class="nc" id="L354">			System.out.print(&quot;\nPlease enter desired password: &quot;);</span>
+<span class="nc" id="L355">			pass = s.nextLine();</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">			if (pass.length() &gt; 0) {</span>
+<span class="nc" id="L357">				goodPass = true;</span>
+<span class="nc" id="L358">				System.out.println(&quot;\nThat password is acceptable.&quot;);</span>
+<span class="nc" id="L359">			}</span>
+			else {
+<span class="nc" id="L361">				System.out.println(&quot;\nPassword cannot be empty&quot;);</span>
+			}
+		}
+<span class="nc" id="L364">		log.trace(&quot;Password accepted&quot;);</span>
+		
+		// Take input for first name
+<span class="nc" id="L367">		boolean goodFirst = false;</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">		while (!goodFirst) {</span>
+<span class="nc" id="L369">			System.out.print(&quot;\nPlease enter first name: &quot;);</span>
+<span class="nc" id="L370">			first = s.nextLine();</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">			if (first.length() &gt; 0) {</span>
+<span class="nc" id="L372">				goodFirst = true;</span>
+<span class="nc" id="L373">			}</span>
+			else {
+<span class="nc" id="L375">				System.out.println(&quot;\nFirst name cannot be empty&quot;);</span>
+			}
+		}
+<span class="nc" id="L378">		log.trace(&quot;First name accepted&quot;);</span>
+		
+		//	Take input for last name
+<span class="nc" id="L381">		boolean goodLast = false;</span>
+<span class="nc bnc" id="L382" title="All 2 branches missed.">		while (!goodLast) {</span>
+<span class="nc" id="L383">			System.out.print(&quot;Please enter last name: &quot;);</span>
+<span class="nc" id="L384">			last = s.nextLine();</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">			if (last.length() &gt; 0) {</span>
+<span class="nc" id="L386">				goodLast = true;</span>
+<span class="nc" id="L387">			}</span>
+			else {
+<span class="nc" id="L389">				System.out.println(&quot;\nLast name cannot be empty&quot;);</span>
+			}
+		}
+<span class="nc" id="L392">		log.trace(&quot;Last name accepted&quot;);</span>
+		
+<span class="nc" id="L394">		Optional&lt;User&gt; newUser = userService.createUser(first, last, choice, pass);</span>
+<span class="nc" id="L395">		User unpacked = null;</span>
+		try {
+<span class="nc" id="L397">			unpacked = newUser.get();</span>
+<span class="nc" id="L398">			System.out.println(&quot;\nA new user has been created with the following information: &quot;);</span>
+<span class="nc" id="L399">			System.out.println(&quot;First name: &quot; + unpacked.getFirstName());</span>
+<span class="nc" id="L400">			System.out.println(&quot;Last name: &quot; + unpacked.getLastName());</span>
+<span class="nc" id="L401">			System.out.println(&quot;Username: &quot; + unpacked.getUsername());</span>
+<span class="nc" id="L402">			System.out.println(&quot;\nThe user ID is &quot; + unpacked.getUserID());</span>
+<span class="nc" id="L403">			log.info(&quot;New user {} created&quot;, unpacked.getUserID());</span>
+<span class="nc" id="L404">		}</span>
+<span class="nc" id="L405">		catch (NoSuchElementException e) {</span>
+<span class="nc" id="L406">			log.error(&quot;New user could not be created&quot;);</span>
+<span class="nc" id="L407">			System.out.println(&quot;\nThere was an error creating a new user.&quot;);</span>
+		}
+		
+<span class="nc" id="L410">	}</span>
+
+	public void deleteUser(Scanner s) {
+<span class="nc" id="L413">		log.traceEntry();</span>
+<span class="nc" id="L414">		System.out.println(&quot;\nPlease enter the ID of the user you would like to delete.&quot;);</span>
+<span class="nc" id="L415">		System.out.print(&quot;User ID: &quot;);</span>
+<span class="nc" id="L416">		String inputID = s.nextLine();</span>
+<span class="nc" id="L417">		Integer numId = 0;</span>
+		try {
+<span class="nc" id="L419">			numId = Integer.valueOf(inputID);</span>
+<span class="nc" id="L420">		}</span>
+<span class="nc" id="L421">		catch (NumberFormatException e) {</span>
+<span class="nc" id="L422">			log.warn(&quot;Invalid user ID entered&quot;);</span>
+<span class="nc" id="L423">			System.out.println(&quot;\nThat is not a valid User ID.&quot;);</span>
+		}
+<span class="nc bnc" id="L425" title="All 2 branches missed.">		if (numId != 0) {</span>
+<span class="nc" id="L426">			System.out.println(&quot;\nPlease re-enter password to confirm deletion of user.&quot;);</span>
+<span class="nc" id="L427">			System.out.print(&quot;Password: &quot;);</span>
+<span class="nc" id="L428">			String entry = s.nextLine();</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">			if (entry.equals(superPassword)) {</span>
+<span class="nc" id="L430">				System.out.println(&quot;\nThe user &quot; + numId + &quot; will be deleted.&quot;);</span>
+<span class="nc" id="L431">				userService.deleteUser(numId);</span>
+<span class="nc" id="L432">				log.info(&quot;User {} has been deleted&quot;, numId);</span>
+<span class="nc" id="L433">			}</span>
+			else {
+<span class="nc" id="L435">				System.out.println(&quot;\nThe user will not be deleted at this time&quot;);</span>
+			}
+		}
+<span class="nc" id="L438">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L439">		s.nextLine();</span>
+<span class="nc" id="L440">		log.traceExit();</span>
+<span class="nc" id="L441">	}</span>
+
+	public void deleteAllUsers(Scanner s) {
+<span class="nc" id="L444">		System.out.println(&quot;\nPlease re-enter password to confirm deletion of all users.&quot;);</span>
+<span class="nc" id="L445">		System.out.print(&quot;Password: &quot;);</span>
+<span class="nc" id="L446">		String entry = s.nextLine();</span>
+<span class="nc bnc" id="L447" title="All 2 branches missed.">		if (entry.equals(superPassword)) {</span>
+<span class="nc" id="L448">			Optional&lt;List&lt;User&gt;&gt; allUsers = userService.getAllUsers();</span>
+<span class="nc" id="L449">			List&lt;User&gt; allUsersList = null;</span>
+			try {
+<span class="nc" id="L451">				allUsersList = allUsers.get();</span>
+<span class="nc" id="L452">			}</span>
+<span class="nc" id="L453">			catch (NoSuchElementException e) {</span>
+<span class="nc" id="L454">				log.error(&quot;Error retrieving users from the database&quot;);</span>
+<span class="nc" id="L455">				System.out.println(&quot;\nCould not remove users from the database&quot;);</span>
+			}
+<span class="nc bnc" id="L457" title="All 2 branches missed.">			if (allUsersList != null) {</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">				for (User u : allUsersList) {</span>
+<span class="nc" id="L459">					userService.deleteUser(u.getUserID());</span>
+				}
+<span class="nc" id="L461">				System.out.println(&quot;\nAll users have been removed from records.&quot;);</span>
+<span class="nc" id="L462">				log.info(&quot;All users deleted&quot;);</span>
+			}
+		}
+<span class="nc" id="L465">		System.out.println(&quot;\nPlease hit ENTER to be taken back to the main menu.&quot;);</span>
+<span class="nc" id="L466">		s.nextLine();</span>
+<span class="nc" id="L467">		log.traceExit();</span>
+<span class="nc" id="L468">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
