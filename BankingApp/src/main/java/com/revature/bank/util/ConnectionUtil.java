@@ -44,7 +44,8 @@ public class ConnectionUtil {
 			con = DriverManager.getConnection(endpoint, username, password);
 			
 			log.debug("Database connection established");
-			return log.traceExit(con);
+			connectionInstance = con;
+			return log.traceExit(connectionInstance);
 		}
 		catch(Exception e) {
 			log.error("Unable to establish connection to database");
